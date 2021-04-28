@@ -1,0 +1,36 @@
+  <define>
+    <constant name="world_side" value="20.*m"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+
+    <constant name="CrossingAngle" value="0.020*rad"/>
+    
+    <constant name="CaloSides" value="113"/>
+
+    
+    <constant name="EcalBarrel_ID" value="6"/>
+    <constant name="EcalBarrel_rmin" value="180*cm"/>
+    <constant name="EcalBarrel_rmax" value="199*cm"/>
+    <constant name="EcalBarrel_zmax" value="176.50*cm"/>
+
+    
+    
+    <constant name="SolenoidBarrelInnerRadius" value="EcalBarrel_rmax + .2*cm"/>
+    <constant name="SolenoidCoilOuterZ" value="EcalBarrel_zmax"/> 
+    <constant name="SolenoidBarrelInnerCryostatThickness" value="0.6*cm"/>
+    <constant name="SolenoidBarrelInnerAirgapThickness" value="0.1*cm"/>
+    <constant name="SolenoidBarrelAlConductorThickness" value="1*cm"/>
+    <constant name="SolenoidBarrelQuenchbackThickness" value="0.1*cm"/>
+    <constant name="SolenoidBarrelOuterAirgapThickness" value="0.1*cm"/>
+    <constant name="SolenoidBarrelOuterCryostatThickness" value="0.6*cm"/>
+    <constant name="SolenoidEndcapCryostatThickness" value="0.6*cm"/>
+    <constant name="SolenoidEndcapAirgapThickness" value="0.1*cm"/>
+    <constant name="SolenoidBarrelOuterZ" value="SolenoidCoilOuterZ+SolenoidEndcapAirgapThickness"/>
+    <constant name="SolenoidBarrelConductorInnerRadius" value="SolenoidBarrelInnerRadius + SolenoidBarrelInnerCryostatThickness + SolenoidBarrelInnerAirgapThickness"/>
+    <constant name="SolenoidBarrelOuterCryostatInnerRadius" value="SolenoidBarrelConductorInnerRadius + SolenoidBarrelAlConductorThickness + SolenoidBarrelQuenchbackThickness"/>
+    <constant name="SolenoidBarrelOuterRadius" value="SolenoidBarrelOuterCryostatInnerRadius + SolenoidBarrelOuterAirgapThickness + SolenoidBarrelOuterCryostatThickness"/>
+    <constant name="SolenoidalFieldRadius" value="(SolenoidBarrelConductorInnerRadius + SolenoidBarrelAlConductorThickness / 2.0)"/>
+    
+
+  </define>
