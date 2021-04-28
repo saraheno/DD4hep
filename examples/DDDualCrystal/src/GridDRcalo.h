@@ -1,7 +1,7 @@
 #ifndef GridDRcalo_h
 #define GridDRcalo_h 1
 
-#include "DD4hep/detail/SegmentationsInterna.h"
+
 #include "DD4hep/Factories.h"
 
 #include "DRparamBarrel.h"

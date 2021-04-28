@@ -4,7 +4,7 @@
 #include "GridDRcalo.h"
 
 #include "DD4hep/Segmentations.h"
-#include "DD4hep/detail/SegmentationsInterna.h"
+#include "DD4hep/Factories.h"
 
 namespace dd4hep {
   class Segmentation;

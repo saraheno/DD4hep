@@ -7,6 +7,7 @@
 
 
 
+
 #include "GridDRcalo.h"
 
 
@@ -246,6 +247,6 @@ DRparamBase* GridDRcalo::setParamBase(int noEta) const {
   return paramBase;
 }
 
-REGISTER_SEGMENTATION(GridDRcalo)
+
 }
 }
