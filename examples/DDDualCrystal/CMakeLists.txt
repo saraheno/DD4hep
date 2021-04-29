@@ -44,11 +44,12 @@ endif()
 if (DD4HEP_USE_GEANT4)
   #---------------------------  Plugin library for the simulation framework  ---------
   dd4hep_add_dictionary(G__DDDualCrystalCalorimeter
-    SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/DualCrystalCalorimeterHit.h
+    SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/DualCrystalCalorimeterHit.h src/DRcaloSiPMHit.h 
     LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
     OUTPUT  ${LIBRARY_OUTPUT_PATH}
     USES    DD4hep::DDCore DD4hep::DDG4 Geant4::Interface
     )
+
 
 
 endif()
@@ -72,6 +73,8 @@ dd4hep_add_plugin ( DDDualCrystal
   USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond DD4hep::DDG4 DDDetectors
           ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP Geant4::Interface
 )
+
+
 target_include_directories(DDDualCrystal PUBLIC include)
 target_link_options(DDDualCrystal PRIVATE -L${Geant4_DIR}/..)
 #message (STATUS "CLHEP: ${CLHEP}")

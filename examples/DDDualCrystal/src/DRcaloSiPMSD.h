@@ -2,7 +2,7 @@
 #define DRcaloSiPMSD_h 1
 
 #include "DRcaloSiPMHit.h"
-#include "DRsimInterface.h"
+/*#include "DRsimInterface.h" */
 #include "GridDRcalo.h"
 #include "DD4hep/Segmentations.h"
 
