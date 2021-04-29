@@ -57,7 +57,7 @@ namespace dd4hep {
     template <> bool Geant4SensitiveAction<DualCrystalCalorimeterSD>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
 
 
-      //      std::cout<<"entering DualCrystalAction"<<std::endl;
+      //std::cout<<"entering DualCrystalAction"<<std::endl;
 
 
       Geant4StepHandler h(step);
@@ -118,7 +118,7 @@ namespace dd4hep {
 
 	
 	if ( track->GetCreatorProcess()->G4VProcess::GetProcessName() == "CerenkovPhys")  {
-	  //          std::cout<<" found cerenkov photon"<<std::endl;
+	  //std::cout<<" found cerenkov photon"<<std::endl;
           hit->ncerenkov+=1;
           track->SetTrackStatus(fStopAndKill);
           return false;

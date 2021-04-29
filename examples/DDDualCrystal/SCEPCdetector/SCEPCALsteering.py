@@ -59,6 +59,7 @@ SIM.vertexSigma = [0.0, 0.0, 0.0, 0.0]
 ## 
 ##    
 ################################################################################
+SIM.action.calo = "DualCrystalCalorimeterSDAction"
 
 ##  set the default calorimeter action 
 SIM.action.calo = "DualCrystalCalorimeterSDAction"
