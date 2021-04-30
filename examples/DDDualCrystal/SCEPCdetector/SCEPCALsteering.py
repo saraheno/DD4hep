@@ -59,13 +59,16 @@ SIM.vertexSigma = [0.0, 0.0, 0.0, 0.0]
 ## 
 ##    
 ################################################################################
-SIM.action.calo = "DualCrystalCalorimeterSDAction"
 
 ##  set the default calorimeter action 
-SIM.action.calo = "DualCrystalCalorimeterSDAction"
+##SIM.action.calo = "DualCrystalCalorimeterSDAction"
 
 ## List of patterns matching sensitive detectors of type Calorimeter.
-SIM.action.calorimeterSDTypes = [u'calorimeter']
+##SIM.action.calorimeterSDTypes = [u'calorimeter']
+
+## set sensitive action for DRcalo
+SIM.action.mapActions['DRcalo'] = 'DRcaloSiPMSD'
+SIM.action.mapActions['CrystalEcalBarrel'] = 'DualCrystalCalorimeterSDAction'
 
 ##  create a map of patterns and actions to be applied to sensitive detectors
 ##         example: SIM.action.mapActions['tpc'] = "TPCSDAction" 
