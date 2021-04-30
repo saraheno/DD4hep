@@ -72,7 +72,7 @@ SIM.action.mapActions['CrystalEcalBarrel'] = 'DualCrystalCalorimeterSDAction'
 
 ##  create a map of patterns and actions to be applied to sensitive detectors
 ##         example: SIM.action.mapActions['tpc'] = "TPCSDAction" 
-SIM.action.mapActions = {}
+## SIM.action.mapActions = {}
 
 ##  set the default tracker action 
 SIM.action.tracker = (u'Geant4TrackerWeightedAction', {u'HitPositionCombination': 2, u'CollectSingleDeposits': False})

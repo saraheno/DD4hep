@@ -10,7 +10,10 @@ First time:
 
  git clone git@github.com:saraheno/DD4hep.git
  cd DD4hep
+
+ (choose a line similar to the next one appropriate for your OS)
  source /cvmfs/sft.cern.ch/lcg/views/LCG_99/x86_64-centos7-gcc10-opt/setup.sh
+
  mkdir build
  cd build
  cmake -DDD4HEP_USE_GEANT4=ON -DBoost_NO_BOOST_CMAKE=ON -DDD4HEP_USE_LCIO=ON -DDD4HEP_USE_HEPMC3=ON -DBUILD_TESTING=ON -DDD4HEP_USE_XERCESC=ON -DCMAKE_CXX_STANDARD=17 -DGeant4_DIR=$G4INSTALL/lib/Geant4-10.4.0 -DROOT_DIR=$ROOTSYS -DDD4HEP_BUILD_EXAMPLES=ON -DCMAKE_BUILD_TYPE=Release ..
@@ -20,6 +23,7 @@ First time:
  source bin/thisdd4hep.sh
 
 Subsequent times, in the DD4hep area:
+ (choose a line similar to the next one appropriate for your OS)
    source /cvmfs/sft.cern.ch/lcg/views/LCG_99/x86_64-centos7-gcc10-opt/setup.sh
   source bin/thisdd4hep.sh
 
