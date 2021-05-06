@@ -76,19 +76,14 @@ dd4hep_configure_output ()
 #
 #---DDDualCrystal plugin library -------------------------------------------------------
 dd4hep_add_plugin ( DDDualCrystal
-    GENERATED G__DDDualCrystalCalorimeter.cxx
+    GENERATED G__DDDualCrystalCalorimeter.cxx G__DRcaloSiPM.cxx
   SOURCES src/*.cpp src/plugins/*.cpp
   USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond DD4hep::DDG4 DDDetectors
           ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP Geant4::Interface
 )
 
 
-dd4hep_add_plugin ( DRcaloSiPM
-    GENERATED G__DRcaloSiPM.cxx
-  SOURCES src/*.cpp src/plugins/*.cpp
-  USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond DD4hep::DDG4 DDDetectors
-          ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP Geant4::Interface
-)
+
 
 
 target_include_directories(DDDualCrystal PUBLIC include)
