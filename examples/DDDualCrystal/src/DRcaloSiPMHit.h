@@ -74,9 +74,9 @@ namespace ddDRcalo {
 /// Define namespaces
 #pragma link C++ namespace dd4hep;
 #pragma link C++ namespace dd4hep::sim;
-#pragma link C++ namespace CalVision;
-#pragma link C++ class     CalVision::DRcaloSiPMHit+;
-#pragma link C++ class     CalVision::DRcaloSiPMHitDump;
+#pragma link C++ namespace ddDRcalo;
+#pragma link C++ class     ddDRcalo::DRcaloSiPMHit+;
+
 #endif
 
 #endif // EXAMPLES_DDDualCrystal_SRC_DRcaloSiPMHit_H
