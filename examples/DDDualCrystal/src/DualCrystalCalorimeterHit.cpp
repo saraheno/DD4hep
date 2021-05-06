@@ -23,15 +23,4 @@ using namespace CalVision;
 
 
 
-/*
-DualCrystalCalorimeterHit& DualCrystalCalorimeterHit::operator=(const DualCrystalCalorimeterHit& c)  {
-  if ( &c != this )  {
-    //this->dd4hep::sim::Geant4Calorimeter::Hit::operator=(c);
-    this->ncerenkov=c.ncerenkov;
-    this->nscintillator = c.nscintillator;
-  }
-  return *this;
-}
-
-*/
 

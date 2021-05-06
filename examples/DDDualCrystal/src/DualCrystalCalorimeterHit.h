@@ -89,7 +89,7 @@ namespace CalVision {
 #pragma link C++ namespace dd4hep::sim;
 #pragma link C++ namespace CalVision;
 #pragma link C++ class     CalVision::DualCrystalCalorimeterHit+;
-#pragma link C++ class     CalVision::DualCrystalCalroimeterDump;
+#pragma link C++ class     CalVision::DualCrystalCalorimeterDump;
 #endif
 
 #endif // EXAMPLES_DDDualCrystal_SRC_DualCrystalCalorimeterHIT_H

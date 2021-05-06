@@ -1,190 +1,82 @@
-#ifndef DRcaloSiPMHit_h
-#define DRcaloSiPMHit_h 1
-
-/*#include "DRsimInterface.h"*/
-
-#include <vector>
-#include <utility>
-#include <map>
-#include <tuple>
-
-
-#include "G4VHit.hh"
-#include "G4THitsCollection.hh"
-#include "G4Allocator.hh"
-#include "G4ThreeVector.hh"
-
-#include "DD4hep/Objects.h"
-#include "DD4hep/Segmentations.h"
+//==========================================================================
+//  AIDA Detector description implementation 
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+#ifndef EXAMPLES_DDDualCrystal_SRC_DRcaloSiPMHit_H
+#define EXAMPLES_DDDualCrystal_SRC_DRcaloSiPMHit_H 1
 
 
 
 
 
-class DRsimInterface {
- public:
-  DRsimInterface();
-  ~DRsimInterface();
-
-  typedef std::pair<float,float> hitRange;
-  typedef std::map<hitRange, int> DRsimTimeStruct;
-  typedef std::map<hitRange, int> DRsimWavlenSpectrum;
-
-  struct DRsimSiPMData {
-    DRsimSiPMData() {};
-    virtual ~DRsimSiPMData() {};
-
-    int count;
-    long long int SiPMnum;
-    DRsimTimeStruct timeStruct;
-    DRsimWavlenSpectrum wavlenSpectrum;
-  };
-
-  struct DRsimTowerData {
-    DRsimTowerData() {};
-    virtual ~DRsimTowerData() {};
-
-    int iTheta;
-    int iPhi;
-    int numx;
-    int numy;
-    std::vector<DRsimSiPMData> SiPMs;
-  };
+/// Framework include files
+#include "DDG4/Geant4Data.h"
+#include "G4OpticalPhoton.hh"
+#include "G4VProcess.hh"
 
 
-  struct DRsimEdepFiberData {
-    DRsimEdepFiberData();
-    DRsimEdepFiberData(long long int fiberId64);
-    DRsimEdepFiberData(long long int fiberId64, float edep, float edepEle, float edepGamma, float edepCharged);
-    virtual ~DRsimEdepFiberData() {};
-
-    void accumulate(float edep, float edepEle, float edepGamma, float edepCharged);
-
-    long long int fiberNum;
-    float Edep;
-    float EdepEle;
-    float EdepGamma;
-    float EdepCharged;
-  };
-
-
-
-  struct DRsimEdepData {
-    DRsimEdepData();
-    DRsimEdepData(int theta, int phi);
-    DRsimEdepData(int theta, int phi, float edep, float edepEle, float edepGamma, float edepCharged);
-    virtual ~DRsimEdepData() {};
-
-    void accumulate(float edep, float edepEle, float edepGamma, float edepCharged);
-
-    float Edep;
-    float EdepEle;
-    float EdepGamma;
-    float EdepCharged;
-    int iTheta;
-    int iPhi;
-    std::vector<DRsimEdepFiberData> fibers;
-  };
-
-  struct DRsimLeakageData {
-    DRsimLeakageData() {};
-    virtual ~DRsimLeakageData() {};
-
-    float E;
-    float px;
-    float py;
-    float pz;
-    float vx;
-    float vy;
-    float vz;
-    float vt;
-    int pdgId;
-  };
-
-  struct DRsimGenData {
-    DRsimGenData() {};
-    virtual ~DRsimGenData() {};
-
-    float E;
-    float px;
-    float py;
-    float pz;
-    float vx;
-    float vy;
-    float vz;
-    float vt;
-    int pdgId;
-  };
-
-  struct DRsimEventData {
-    DRsimEventData() {};
-    virtual ~DRsimEventData() {};
-
-    void clear();
-
-    int event_number;
-    std::vector<DRsimTowerData> towers;
-    std::vector<DRsimEdepData> Edeps;
-    std::vector<DRsimLeakageData> leaks;
-    std::vector<DRsimGenData> GenPtcs;
-  };
-};
-
-
-
-
+typedef ROOT::Math::XYZVector Position;
+typedef ROOT::Math::XYZVector Direction;
 
 
 
 namespace ddDRcalo {
-  class DRcaloSiPMHit : public G4VHit {
+
+   
+  class DRcaloSiPMHit : public dd4hep::sim::Geant4Calorimeter::Hit   {
+
   public:
+    int ncerenkov,nscintillator;
 
-    DRcaloSiPMHit(G4int wavBin, G4int timeBin);
-    DRcaloSiPMHit(const DRcaloSiPMHit &right);
-    virtual ~DRcaloSiPMHit();
+  public:
+    /// Default constructor
+    DRcaloSiPMHit() = default;
+    /// Initializing constructor
+  DRcaloSiPMHit(const Position& cell_pos):dd4hep::sim::Geant4Calorimeter::Hit(cell_pos),ncerenkov(0),nscintillator(0) {}
 
-    const DRcaloSiPMHit& operator=(const DRcaloSiPMHit &right);
-    G4bool operator==(const DRcaloSiPMHit &right) const;
-
-    inline void *operator new(size_t);
-    inline void operator delete(void* aHit);
-
-    virtual void Draw() {};
-    virtual void Print() {};
-
-    void photonCount() { fPhotons++; }
-    unsigned long GetPhotonCount() const { return fPhotons; }
-
-    void SetSiPMnum(dd4hep::DDSegmentation::CellID n) { fSiPMnum = n; }
-    const dd4hep::DDSegmentation::CellID& GetSiPMnum() const { return fSiPMnum; }
-
-    void CountWavlenSpectrum(DRsimInterface::hitRange range);
-    const DRsimInterface::DRsimWavlenSpectrum& GetWavlenSpectrum() const { return fWavlenSpectrum; }
-
-    void CountTimeStruct(DRsimInterface::hitRange range);
-    const DRsimInterface::DRsimTimeStruct& GetTimeStruct() const { return fTimeStruct; }
-
-  private:
-    dd4hep::DDSegmentation::CellID fSiPMnum;
-    unsigned long fPhotons;
-    DRsimInterface::DRsimWavlenSpectrum fWavlenSpectrum;
-    DRsimInterface::DRsimTimeStruct fTimeStruct;
-    G4int fWavBin;
-    G4int fTimeBin;
+    /// Default destructor
+    virtual ~DRcaloSiPMHit() = default;
+    /// Assignment operator
+    //DRcaloSiPMHit& operator=(const DRcaloSiPMHit& c);
   };
 
-  typedef G4THitsCollection<DRcaloSiPMHit> DRcaloSiPMHitsCollection;
-  extern G4ThreadLocal G4Allocator<DRcaloSiPMHit>* DRcaloSiPMHitAllocator;
+  /// Helper to dump data file
+  /**
+   *  Usage:  
+   *  $> root.exe
+   *  ....
+   *  root [0] gSystem->Load("libDDG4Plugins.so");
+   *  root [1] gSystem->Load("libDDG4_MySensDet.so");
+   *  root [2] CalVision::Dump::dumpData(<num-ebents>,<file-name>);
+   *
+   */
+  class Dump   {
+  public:
 
-  inline void* DRcaloSiPMHit::operator new(size_t) {
-    if (!DRcaloSiPMHitAllocator) DRcaloSiPMHitAllocator = new G4Allocator<DRcaloSiPMHit>;
-    return (void*)DRcaloSiPMHitAllocator->MallocSingle();
-  }
 
-  inline void DRcaloSiPMHit::operator delete(void*aHit) {
-    DRcaloSiPMHitAllocator->FreeSingle((DRcaloSiPMHit*) aHit);
-  }
+  };
 }
 
+// CINT configuration
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
+/// Define namespaces
+#pragma link C++ namespace dd4hep;
+#pragma link C++ namespace dd4hep::sim;
+#pragma link C++ namespace CalVision;
+#pragma link C++ class     CalVision::DRcaloSiPMHit+;
+#pragma link C++ class     CalVision::DRcaloSiPMHitDump;
 #endif
+
+#endif // EXAMPLES_DDDualCrystal_SRC_DRcaloSiPMHit_H
