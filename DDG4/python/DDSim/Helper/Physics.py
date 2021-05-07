@@ -138,7 +138,7 @@ class Physics(ConfigHelper):
 # Add cerenkov physics
 
     opt2 = PhysicsList(kernel, 'Geant4OpticalPhotonPhysics/OpticalGammaPhys')
-    opt2.VerboseLevel = 10
+    opt2.VerboseLevel = 1
     opt2.enableUI()
     seq.adopt(opt2)
 
@@ -146,7 +146,7 @@ class Physics(ConfigHelper):
     cerenkov.MaxNumPhotonsPerStep = 10
     cerenkov.MaxBetaChangePerStep = 10.0
     cerenkov.TrackSecondariesFirst = True
-    cerenkov.VerboseLevel = 10
+    cerenkov.VerboseLevel = 1
     cerenkov.enableUI()
     seq.adopt(cerenkov)
 

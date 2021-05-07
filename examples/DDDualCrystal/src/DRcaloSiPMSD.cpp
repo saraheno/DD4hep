@@ -187,6 +187,12 @@ namespace dd4hep {
 
 
 
+      G4String theVolName = track->GetVolume()->GetName();
+
+      std::cout<<" volumen name is "<< theVolName <<std::endl;
+
+
+
       //photons
       if( track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() )  {
 	
