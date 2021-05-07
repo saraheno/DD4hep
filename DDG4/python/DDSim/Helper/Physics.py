@@ -152,4 +152,16 @@ class Physics(ConfigHelper):
 
 
 
+
+# Add scintillator physics
+
+
+#    scintill = PhysicsList(kernel, 'Geant4ScintillationPhysics/ScintillationPhys')
+#    scintill.VerboseLevel = 10
+#    scintill.TrackSecondariesFirst = True
+#    scintill.enableUI()
+#    seq.adopt(scintill)
+
+
+
     return seq

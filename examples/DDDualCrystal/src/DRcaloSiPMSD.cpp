@@ -180,13 +180,17 @@ namespace dd4hep {
 
 
       G4Track * track =  step->GetTrack();
+      G4int TrPDGid = track->GetDefinition()->GetPDGEncoding();
+
+      std::cout<<"will robinson have track "<<track->GetCreatorProcess()->G4VProcess::GetProcessName()<<" pid "<<TrPDGid <<std::endl;
+
 
 
 
       //photons
       if( track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() )  {
 	
-	//	std::cout<<"will robinson have photon "<<track->GetCreatorProcess()->G4VProcess::GetProcessName() <<std::endl;
+	std::cout<<"will robinson have photon "<<track->GetCreatorProcess()->G4VProcess::GetProcessName() <<std::endl;
 	//std::cout<<" number of cerenkov is "<<hit->ncerenkov<<std::endl;
 
 	
@@ -207,7 +211,7 @@ namespace dd4hep {
       }
 
       else {
-	//        std::cout<<" not a photon"<<std::endl;
+	std::cout<<" not a photon"<<std::endl;
 
 
         hit->energyDeposit += contrib.deposit;

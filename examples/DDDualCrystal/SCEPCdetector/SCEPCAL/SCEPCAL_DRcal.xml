@@ -29,12 +29,14 @@
       </sipmDim>
       <structure>
 <!-- th parameters in the next line are related to the number of fibers.  
-the first is "gridSize" and the second is "sipmSize"
+the first is "gridSize" and the second is "sipmSize".  the second should
+be a little smaller than the first?
 -->
-        <dim distance="10.4*mm" dx="1.2*mm"/>  
-        <cladC name="cladC" rmax="0.5*mm" rmin="0.49*mm" material="FluorinatedPolymer" vis="CladVis"/>
-        <coreC name="coreC" rmax="0.5*mm" rmin="0.49*mm" material="PMMA" vis="CerenVis"/> <!--also cladS-->
-        <coreS name="coreS" rmax="0.5*mm" rmin="0.485*mm" material="DR_Polystyrene" vis="ScintVis"/>
+        <dim distance="10.4*mm" dx="10.0*mm"/>  
+<!-- note that only rmax for cladC is used and only rmin for coreC and coreS are used-->
+        <cladC name="cladC" rmax="8.0*mm" rmin="7.99*mm" material="FluorinatedPolymer" vis="CladVis"/>
+        <coreC name="coreC" rmax="8.0*mm" rmin="7.99*mm" material="PMMA" vis="CerenVis"/> <!--also cladS-->
+        <coreS name="coreS" rmax="8.0*mm" rmin="7.99*mm" material="DR_Polystyrene" vis="ScintVis"/>
       </structure>
       <barrel height="2.*m" rmin="1.8*m" nphi="283" theta="0.0" start="0" material="Copper" vis="TowerVis">
         <deltatheta deltatheta="0.02222"/>
