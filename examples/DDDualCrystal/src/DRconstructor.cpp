@@ -77,6 +77,9 @@ It has 11 parameters: the half length in z, the polar angles from the centre of 
     std::cout<<"    material is "<<x_theta.materialStr()<<std::endl;
     towerVol.setVisAttributes(*fDescription, x_theta.visStr());
 
+    //danger danger will robinson
+    //towerVol.setSensitiveDetector(*fSensDet);
+
 
     implementFibers(x_theta, towerVol, tower, param);
 
@@ -104,6 +107,7 @@ It has 11 parameters: the half length in z, the polar angles from the centre of 
     for (int nPhi = 0; nPhi < x_theta.nphi(); nPhi++) {
       auto towerId64 = fSegmentation->setVolumeID( fTowerNoLR, nPhi );
       int towerId32 = fSegmentation->getFirst32bits(towerId64);
+      //std::cout<<"towerid32 nphi is "<<towerId32<<" "<<nPhi<<std::endl;
 
       // copy number of assemblyVolume is unpredictable, use dummy volume to make use of copy number of afterwards
       dd4hep::Volume assemblyEnvelopVol( "assembly", assemblyEnvelop, fDescription->material("Vacuum") );

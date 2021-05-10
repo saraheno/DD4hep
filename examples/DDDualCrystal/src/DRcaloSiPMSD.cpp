@@ -141,6 +141,7 @@ namespace dd4hep {
 
       try {
         cell = cellID(step);
+	std::cout<<" cell is "<<cell<<std::endl;
       } catch(std::runtime_error &e) {
 	std::stringstream out;
         out << std::setprecision(20) << std::scientific;

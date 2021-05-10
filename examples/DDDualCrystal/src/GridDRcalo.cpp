@@ -107,11 +107,14 @@ Vector3D GridDRcalo::localPosition(int numx, int numy, int x_, int y_) const {
 
 /// determine the cell ID based on the position
 CellID GridDRcalo::cellID(const Vector3D& localPosition, const Vector3D& /*globalPosition*/, const VolumeID& vID) const {
+  std::cout<<"will robinson entering cell id"<<std::endl;
+  std::cout<<"vID is "<<vID<<std::endl;
   int numx = numX(vID);
   int numy = numY(vID);
 
   auto localX = localPosition.x();
   auto localY = localPosition.y();
+  std::cout<<" localx localy "<<localX<<" "<<localY<<std::endl;
 
   int x = std::floor( ( localX + ( numx%2==0 ? 0. : fGridSize/2. ) ) / fGridSize ) + numx/2;
   int y = std::floor( ( localY + ( numy%2==0 ? 0. : fGridSize/2. ) ) / fGridSize ) + numy/2;
@@ -122,6 +125,7 @@ CellID GridDRcalo::cellID(const Vector3D& localPosition, const Vector3D& /*globa
 VolumeID GridDRcalo::setVolumeID(int numEta, int numPhi) const {
   VolumeID numEtaId = static_cast<VolumeID>(numEta);
   VolumeID numPhiId = static_cast<VolumeID>(numPhi);
+  //  std::cout<<"will robinson numEtaID numPhiID are "<<numEtaId<<" "<<numPhiId<<std::endl;
   VolumeID vID = 0;
   _decoder->set(vID, fNumEtaId, numEtaId);
   _decoder->set(vID, fNumPhiId, numPhiId);
