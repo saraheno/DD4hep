@@ -33,4 +33,7 @@
     <constant name="SolenoidalFieldRadius" value="(SolenoidBarrelConductorInnerRadius + SolenoidBarrelAlConductorThickness / 2.0)"/>
     
 
+
+    <constant name="DRinnerRadius" value="SolenoidBarrelOuterRadius+0.1*m"/>
+
   </define>

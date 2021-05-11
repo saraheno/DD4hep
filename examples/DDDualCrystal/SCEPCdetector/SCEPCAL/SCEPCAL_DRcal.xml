@@ -38,7 +38,7 @@ be a little smaller than the first?
         <coreC name="coreC" rmax="8.0*mm" rmin="7.99*mm" material="PMMA" vis="CerenVis"/> <!--also cladS-->
         <coreS name="coreS" rmax="8.0*mm" rmin="7.99*mm" material="DR_Polystyrene" vis="ScintVis"/>
       </structure>
-      <barrel height="2.*m" rmin="1.8*m" nphi="283" theta="0.0" start="0" material="Copper" vis="TowerVis">
+      <barrel height="2.*m" rmin="DRinnerRadius" nphi="283" theta="0.0" start="0" material="Copper" vis="TowerVis">
         <deltatheta deltatheta="0.02222"/>
         <deltatheta deltatheta="0.02220"/>
         <deltatheta deltatheta="0.02217"/>
