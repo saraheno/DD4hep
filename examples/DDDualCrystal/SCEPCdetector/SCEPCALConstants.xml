@@ -12,7 +12,8 @@
     <constant name="EcalBarrel_ID" value="6"/>
     <constant name="EcalBarrel_rmin" value="180*cm"/>
     <constant name="EcalBarrel_rmax" value="199*cm"/>
-    <constant name="EcalBarrel_zmax" value="176.50*cm"/>
+<!--    <constant name="EcalBarrel_zmax" value="176.50*cm"/> -->
+    <constant name="EcalBarrel_zmax" value="260.*cm"/>
 
     
     
