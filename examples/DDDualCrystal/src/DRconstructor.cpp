@@ -111,6 +111,12 @@ It has 11 parameters: the half length in z, the polar angles from the centre of 
 
       // copy number of assemblyVolume is unpredictable, use dummy volume to make use of copy number of afterwards
       dd4hep::Volume assemblyEnvelopVol( "assembly", assemblyEnvelop, fDescription->material("Vacuum") );
+      dd4hep::Transform3D lala = param->GetAssembleTransform3D(nPhi);
+      dd4hep::Position pos;
+      dd4hep::Rotation3D v;
+      lala.GetDecomposition(v,pos);
+      //std::cout<<" DR placing tower at "<<pos.X()<<" "<<pos.Y()<<" "<<pos.Z()<<std::endl;
+      std::cout<<" DR placing tower at "<<sqrt(pos.X()*pos.X()+pos.Y()*pos.Y())<<" "<<pos.Z()<<std::endl;
       fExperimentalHall->placeVolume( assemblyEnvelopVol, param->GetAssembleTransform3D(nPhi) );
 
       assemblyEnvelopVol.placeVolume( towerVol, towerId32, dd4hep::Position(0.,0.,-param->GetSipmHeight()/2.) );
