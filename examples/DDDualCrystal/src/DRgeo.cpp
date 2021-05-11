@@ -39,6 +39,7 @@ namespace ddDRcalo {
 
     auto paramBarrel = segmentation->paramBarrel();
     paramBarrel->SetInnerX(x_barrel.rmin());
+    std::cout<<"DR inner radius is "<<x_barrel.rmin()<<std::endl;
     paramBarrel->SetTowerH(x_barrel.height());
     paramBarrel->SetNumZRot(x_barrel.nphi());
     paramBarrel->SetSipmHeight(x_sipmDim.height());
