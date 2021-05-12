@@ -20,7 +20,7 @@
 
 
   <detectors>
-    <detector id="1" name="DRcalo" type="ddDRcalo" readout="DRcaloSiPMreadout" region="FastSimOpFiberRegion" vis="Invisible">
+    <detector id="DR_ID" name="DRcalo" type="ddDRcalo" readout="DRcaloSiPMreadout" region="FastSimOpFiberRegion" vis="Invisible">
       <sensitive type="DRcaloSiPMSD"/>
       <sipmDim height="0.3*mm" material="PolyvinylChloride" vis="GenericVis">
         <sipmGlass material="DR_PyrexGlass" vis="GlassVis"/>
