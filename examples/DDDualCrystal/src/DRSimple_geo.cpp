@@ -32,6 +32,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
   static double tolerance = 0e0;
 
+
+  Material      air       = description.air();
+
+
   int           det_id    = x_det.id();
   std::cout<<" det_id is "<<det_id<<std::endl;
   string        det_name  = x_det.nameStr();
@@ -62,6 +66,21 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
   DetElement    sdet      (det_name,det_id);
   Volume        motherVol = description.pickMotherVolume(sdet);
+
+  // this is too small?
+  PolyhedraRegular hedra  (nphi,inner_r,inner_r+thick+tolerance*2e0,x_dim.z());
+  Volume        envelope  (det_name,hedra,air);
+  PlacedVolume  env_phv   = motherVol.placeVolume(envelope,RotationZYX(0,0,M_PI/nphi));
+
+  env_phv.addPhysVolID("system",det_id);
+  env_phv.addPhysVolID("barrel",0);
+  sdet.setPlacement(env_phv);
+
+
+
+
+
+
 
 
 
