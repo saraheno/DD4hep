@@ -11,6 +11,7 @@ ddDRcalo::DRconstructor::DRconstructor(xml_det_t& x_det)
   fX_cladC( fX_struct.child( _Unicode(cladC) ) ),
   fX_coreC( fX_struct.child( _Unicode(coreC) ) ),
   fX_coreS( fX_struct.child( _Unicode(coreS) ) ) {
+
   fExperimentalHall = nullptr;
   fParamBarrel = nullptr;
   fDescription = nullptr;
