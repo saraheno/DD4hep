@@ -149,11 +149,21 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     towerVol.setVisAttributes(description, fX_barrel.visStr());
 
 
+    double mod_x_off = 0.;             
+    double mod_y_off = inner_r + thick/2;  
+
+
     for (int nPhi = 0; nPhi < nphi; nPhi++) {
     //for (int nPhi = 0; nPhi < 1; nPhi++) {
       double phi=nPhi*delphi;
 
-      Transform3D tr(RotationZYX(0,phi,M_PI*0.5),Translation3D(0.,0.,0.));
+      double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
+      double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
+
+
+
+
+      Transform3D tr(RotationZYX(0,phi,M_PI*0.5),Translation3D(-m_pos_x,-m_pos_y,0.));
       PlacedVolume pv = envelope.placeVolume(towerVol,tr);
       pv.addPhysVolID("system",det_id);
       pv.addPhysVolID("barrel",0);
