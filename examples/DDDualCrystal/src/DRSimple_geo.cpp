@@ -78,9 +78,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   // these refer to different fields in the xml file for this detector
   xml_comp_t fX_struct( x_det.child( _Unicode(structure) ) );
   xml_comp_t fX_barrel( x_det.child( _Unicode(barrel) ) );
-  xml_comp_t fX_cladC( fX_struct.child( _Unicode(cladC) ) );
-  xml_comp_t fX_coreC( fX_struct.child( _Unicode(coreC) ) );
-  xml_comp_t fX_coreS( fX_struct.child( _Unicode(coreS) ) );
+  xml_comp_t fX_core( fX_struct.child( _Unicode(core) ) );
+
 
 
   // three structures, volumes, placedvolumes, and detelements
@@ -149,12 +148,33 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     towerVol.setVisAttributes(description, fX_barrel.visStr());
 
 
+
+    // fibers
+
+    dd4hep::Tube fiber = dd4hep::Tube(0.,fX_core.rmin(),thick);
+    std::cout<<" making fiber from "<<fX_core.materialStr()<<std::endl;
+    dd4hep::Volume coreVol("core", fiber, description.material(fX_core.materialStr()));
+
+    DetElement afiber(tower_det,"fiber",det_id);
+    afiber.setAttributes(description,coreVol,fX_core.regionStr(),fX_core.limitsStr(),fX_core.visStr());
+
+
+    PlacedVolume fiber_phv = towerVol.placeVolume( coreVol, Position(0.,0.,thick/2. ));
+    fiber_phv.addPhysVolID("fiber",1);
+    afiber.setPlacement(fiber_phv);
+    
+ 
+
+
+
+    // now do the placement
+
     double mod_x_off = 0.;             
     double mod_y_off = inner_r + thick/2;  
 
 
-    for (int nPhi = 0; nPhi < nphi; nPhi++) {
-    //for (int nPhi = 0; nPhi < 1; nPhi++) {
+    //for (int nPhi = 0; nPhi < nphi; nPhi++) {
+    for (int nPhi = 0; nPhi < 1; nPhi++) {
       double phi=nPhi*delphi;
 
       double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
