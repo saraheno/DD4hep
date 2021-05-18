@@ -115,6 +115,10 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
 
+  for(int iside=0;iside<2;iside++) {
+    double aside = 1.;
+    if(iside==1) aside=-1.;
+
 
   for(int itower=0;itower<nzdiv;itower++) {
     //for(int itower=nzdiv-1;itower<nzdiv;itower++) {
@@ -125,11 +129,17 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     //    if((itower==0)||(itower==nzdiv-1)) {
 
     //each z division has a unique tower
-    string t_name = _toString(itower,"tower%d");
+    string t_name;
+    if(iside==0 ) {
+      t_name = _toString(itower,"towerp%d");
+    }
+    else {
+      t_name = _toString(itower,"towerm%d");
+    }
     DetElement tower_det(t_name,det_id);  // detector element for a tower
 
     // angle for tower at this z division with respect to x-y plane
-    double aatheta = -atan((itower*(delzt-delzb))/thick);
+    double aatheta = -1.*atan((itower*(delzt-delzb))/thick);
     //    aatheta=M_PI/4.;
 
 
@@ -217,7 +227,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
       double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
       double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
-      double m_pos_z = mod_z_off+1.0*(delzm*itower);
+      double m_pos_z = aside*(mod_z_off+1.0*(delzm*itower));
 
 
       if(nPhi==0) {
@@ -225,7 +235,9 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
       }
 
       //Transform3D tr(RotationZYX(0,phi,M_PI*0.5),Translation3D(m_pos_x,m_pos_y,m_pos_z));
-      Transform3D tr(RotationZYX(-M_PI*0.5,phi,M_PI*0.5),Translation3D(-m_pos_x,-m_pos_y,m_pos_z));
+      double zrot=-1.*aside*M_PI*0.5;
+
+      Transform3D tr(RotationZYX(zrot,phi,M_PI*0.5),Translation3D(-m_pos_x,-m_pos_y,m_pos_z));
       PlacedVolume pv = envelope.placeVolume(towerVol,tr);
       pv.addPhysVolID("system",det_id);
       pv.addPhysVolID("barrel",0);
@@ -243,9 +255,11 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
       //    }
 
     //      }
+
+
       } // end tower loop
 
-
+  } // end side loop
 
   // Set envelope volume attributes.
   envelope.setAttributes(description,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
