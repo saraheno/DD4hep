@@ -206,6 +206,12 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
     PlacedVolume fiber_phv = towerVol.placeVolume( coreVol, tra);
+    //fiber_pv.addPhysVolID("system",det_id);
+    // fiber_pv.addPhysVolID("barrel",0);
+    //  fiber_pv.addPhysVolID("side",iside);
+    //  fiber_pv.addPhysVolID("ieta",itower);
+    //  fiber_pv.addPhysVolID("module",nPhi+1);
+
     fiber_phv.addPhysVolID("fiber",1);
     afiber.setPlacement(fiber_phv);
 
@@ -241,8 +247,9 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
       PlacedVolume pv = envelope.placeVolume(towerVol,tr);
       pv.addPhysVolID("system",det_id);
       pv.addPhysVolID("barrel",0);
+      pv.addPhysVolID("side",iside);
       pv.addPhysVolID("ieta",itower);
-      pv.addPhysVolID("module",nPhi+1);
+      pv.addPhysVolID("iphi",nPhi+1);
 
 
       DetElement sd = nPhi==0 ? tower_det : tower_det.clone(t_name+_toString(nPhi,"0%d"));

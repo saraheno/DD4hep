@@ -42,7 +42,7 @@
     </readout>
     <readout name="DRNoSegment">
       <segmentation type="NoSegmentation"/>
-      <id>system:5,eta:-8,phi:9</id>
+      <id>system:5,barrel:1,iside:1,ieta:11,iphi:11,ifiber:1,eta:-8,phi:9</id>
     </readout>
   </readouts>
 
