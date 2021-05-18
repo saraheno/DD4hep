@@ -70,7 +70,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   std::cout<<" theta range is "<<thetamax<<std::endl;
   double zmaxt = outer_r*tan(thetamax);
   std::cout<<" zlength at top is "<<zmaxt<<std::endl;
-  double zmaxm = (outer_r/2.)*tan(thetamax);
+  double zmaxm = (inner_r+(thick/2.))*tan(thetamax);
   std::cout<<" zlength at middle is "<<zmaxm<<std::endl;
   double delzb=zmaxb/nzdiv;
   std::cout<<" z div at bottom "<<delzb<<std::endl;
@@ -164,6 +164,9 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     // rotationzyx.  first a rotation of an angle phi around the z axis followed by a rotation of an angle theta around the y axis followed by a third rotation of an angle psi around the x axis (phi, theta,psi)
     Transform3D tra(RotationZYX(0,aatheta,0.),Translation3D(0.,0.,0.));
 
+
+
+    //if I create a mother that is a brass trapezoid, and make the fiber a daughter, I do not need to make a hole in the brass but if I make a mother that is air and place the brass trapezoid and the fiber separately as daughters to the air mother, then I do need to make a hole in the brass
     dd4hep::SubtractionSolid tower(towertrap,fiberhole,tra);
 
 
@@ -175,8 +178,8 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
     // fibers
 
-    /*
-        dd4hep::Tube fiber = dd4hep::Tube(0.,fX_core.rmin(),thick);
+    
+    dd4hep::Tube fiber = dd4hep::Tube(0.,fX_core.rmin(),thick/2.);
 
     std::cout<<" making fiber from "<<fX_core.materialStr()<<std::endl;
     dd4hep::Volume coreVol("core", fiber, description.material(fX_core.materialStr()));
@@ -191,11 +194,11 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
 
-    PlacedVolume fiber_phv = towerVol.placeVolume( coreVol, Position(0.,0.,thick/2. ));
+    PlacedVolume fiber_phv = towerVol.placeVolume( coreVol, tra);
     fiber_phv.addPhysVolID("fiber",1);
     afiber.setPlacement(fiber_phv);
 
-    */
+    
 
     // now do the placement
 
@@ -204,20 +207,16 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     double mod_z_off= delzm/2.;
 
 
-    for (int nPhi = 0; nPhi < 1; nPhi++) {
-    //std::cout<<"starting phi loop"<<std::endl;
-    //for (int nPhi = 0; nPhi < nphi; nPhi++) {
+    //for (int nPhi = 0; nPhi < 1; nPhi++) {
+    std::cout<<"starting phi loop"<<std::endl;
+    for (int nPhi = 0; nPhi < nphi; nPhi++) {
       double phi=nPhi*delphi;
       std::cout<<"placing at phi "<<phi<<std::endl;
 
       double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
       double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
-      //double m_pos_x = mod_y_off * std::cos(phi);
-      //double m_pos_y =  mod_y_off * std::sin(phi);
       double m_pos_z = mod_z_off+1.0*(delzm*itower);
-      //double m_pos_x = 0.;
-      //double m_pos_y = 0.;
-      //double m_pos_z = mod_z_off+1.0*(delzm*itower);
+
 
 
 
