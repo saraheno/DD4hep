@@ -26,7 +26,7 @@
 
       <structure>
 <!-- note that only rmax for cladC is used and only rmin for coreC and coreS are used-->
-        <core name="core" rmax="100.0*mm" rmin="50.99*mm" material="PMMA" vis="CerenVis"/> 
+        <core name="core" rmax="40.0*mm" rmin="30.99*mm" material="PMMA" vis="CerenVis"/> 
       </structure>
  <barrel material="Copper" vis="TowerVis">
  </barrel>

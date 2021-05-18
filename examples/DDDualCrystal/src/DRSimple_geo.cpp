@@ -117,19 +117,20 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
   for(int itower=0;itower<nzdiv;itower++) {
-  //for(int itower=nzdiv-1;itower<nzdiv;itower++) {
+    //for(int itower=nzdiv-1;itower<nzdiv;itower++) {
 
 
     std::cout<<"ITOWER is "<<itower<<std::endl;
 
-    if((itower==0)||(itower==nzdiv-1)) {
+    //    if((itower==0)||(itower==nzdiv-1)) {
 
     //each z division has a unique tower
     string t_name = _toString(itower,"tower%d");
     DetElement tower_det(t_name,det_id);  // detector element for a tower
 
     // angle for tower at this z division with respect to x-y plane
-    double aatheta = atan((itower*(delzt-delzb))/thick)*180./M_PI;
+    double aatheta = -atan((itower*(delzt-delzb))/thick);
+    //    aatheta=M_PI/4.;
 
 
 
@@ -210,15 +211,18 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     //for (int nPhi = 0; nPhi < 1; nPhi++) {
     std::cout<<"starting phi loop"<<std::endl;
     for (int nPhi = 0; nPhi < nphi; nPhi++) {
+      //      if((nPhi%2)==0) {
       double phi=nPhi*delphi;
-      std::cout<<"placing at phi "<<phi<<std::endl;
+      //std::cout<<"placing at phi "<<phi<<std::endl;
 
       double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
       double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
       double m_pos_z = mod_z_off+1.0*(delzm*itower);
 
 
-
+      if(nPhi==0) {
+	std::cout<<"m_pos_z is "<<m_pos_z<<std::endl;
+      }
 
       //Transform3D tr(RotationZYX(0,phi,M_PI*0.5),Translation3D(m_pos_x,m_pos_y,m_pos_z));
       Transform3D tr(RotationZYX(-M_PI*0.5,phi,M_PI*0.5),Translation3D(-m_pos_x,-m_pos_y,m_pos_z));
@@ -234,11 +238,11 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
       sd.setPlacement(pv);
       sdet.add(sd);
-
-
-    }
-
       }
+
+      //    }
+
+    //      }
       } // end tower loop
 
 
