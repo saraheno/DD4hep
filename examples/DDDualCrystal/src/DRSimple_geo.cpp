@@ -106,6 +106,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   env_phv.addPhysVolID("barrel",0);
   sdet.setPlacement(env_phv);  // associate the placed volume to the detector element
 
+  sens.setType("calorimeter");
 
 
   // detector element for a tower. need to make a volume, a placed volume, and then associate the placed volume to this detector element
@@ -195,7 +196,9 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     std::cout<<" making fiber from "<<fX_core.materialStr()<<std::endl;
     dd4hep::Volume coreVol("core", fiber, description.material(fX_core.materialStr()));
 
+    std::cout<<"fX_core.isSensitive is "<<fX_core.isSensitive()<<std::endl;
     if ( fX_core.isSensitive() ) {
+      std::cout<<"setting DRSimple fiber sensitive "<<std::endl;
             coreVol.setSensitiveDetector(sens);
     }
 

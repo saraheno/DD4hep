@@ -23,10 +23,9 @@
     <detector id="DR_ID" name="DRSimple" type="DD4hep_DRSimple" readout="DRNoSegment" vis="Invisible">
 <!-- <dimensions numsides="1663" nz="382" rmin="DRinnerRadius" thickness="180" z_length="306." /> -->
 <dimensions numsides="32" nz="10" rmin="DRinnerRadius" thickness="180" z_length="306." />
-
       <structure>
 <!-- note that only rmax for cladC is used and only rmin for coreC and coreS are used-->
-        <core name="core" rmax="40.0*mm" rmin="30.99*mm" material="PMMA" vis="CerenVis"/> 
+        <core name="core" rmax="100.0*mm" rmin="99.99*mm" material="PMMA" vis="CerenVis" sensitive="yes"/> 
       </structure>
  <barrel material="Copper" vis="TowerVis">
  </barrel>

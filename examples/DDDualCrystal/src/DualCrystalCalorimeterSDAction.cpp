@@ -57,7 +57,29 @@ namespace dd4hep {
     template <> bool Geant4SensitiveAction<DualCrystalCalorimeterSD>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
 
 
-      //std::cout<<"entering DualCrystalAction"<<std::endl;
+
+
+
+      G4StepPoint *thePrePoint = step->GetPreStepPoint();
+      G4StepPoint *thePostPoint = step->GetPostStepPoint();
+      const G4ThreeVector &thePrePosition = thePrePoint->GetPosition();
+      const G4ThreeVector &thePostPosition = thePostPoint->GetPosition();
+      G4VPhysicalVolume *thePrePV = thePrePoint->GetPhysicalVolume();
+      G4VPhysicalVolume *thePostPV = thePostPoint->GetPhysicalVolume();
+      G4String thePrePVName = "";
+      if (thePrePV)
+	thePrePVName = thePrePV->GetName();
+      G4String thePostPVName = "";
+      if (thePostPV)
+	thePostPVName = thePostPV->GetName();
+      G4Track *theTrack = step->GetTrack();
+      G4int TrPDGid = theTrack->GetDefinition()->GetPDGEncoding();
+
+      //      if(thePrePVName.contains("slice")==0) {
+	  std::cout<<"entering DualCrystalAction"<<std::endl;
+	  std::cout<<" prevolume is "<<thePrePVName<<std::endl;
+	  std::cout<<" pid is "<<TrPDGid<<std::endl;
+	  //}
 
 
       Geant4StepHandler h(step);
@@ -113,7 +135,7 @@ namespace dd4hep {
       //photons
       if( track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() )  {
 	
-	//	std::cout<<"will robinson have photon "<<track->GetCreatorProcess()->G4VProcess::GetProcessName() <<std::endl;
+	//std::cout<<"will robinson have photon "<<track->GetCreatorProcess()->G4VProcess::GetProcessName() <<std::endl;
 	//std::cout<<" number of cerenkov is "<<hit->ncerenkov<<std::endl;
 
 	
