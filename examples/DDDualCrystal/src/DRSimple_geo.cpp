@@ -24,13 +24,15 @@ using namespace dd4hep::detail;
 static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector sens)  {
 
 
+
+
   std::cout<<"Creating DRSimple"<<std::endl;
 
 
   xml_det_t     x_det     = e;
 
 
-  static double tolerance = 0e0;
+  static double tol = 1.;
   // material to underly it all
   Material      air       = description.air();
 
@@ -83,6 +85,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_comp_t fX_struct( x_det.child( _Unicode(structure) ) );
   xml_comp_t fX_barrel( x_det.child( _Unicode(barrel) ) );
   xml_comp_t fX_core( fX_struct.child( _Unicode(core) ) );
+  xml_comp_t fX_hole( fX_struct.child( _Unicode(hole) ) );
 
 
 
@@ -98,7 +101,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   Volume        motherVol = description.pickMotherVolume(sdet);
 
 
-  PolyhedraRegular hedra  (nphi,inner_r,outer_r+tolerance*2e0,zmaxt);
+  //PolyhedraRegular hedra  (nphi,inner_r,outer_r+tol*2e0,zmaxt);
+  PolyhedraRegular hedra  (nphi,0.,10*outer_r+tol*2e0,10*zmaxt);
   Volume        envelope  (det_name,hedra,air);
   PlacedVolume  env_phv   = motherVol.placeVolume(envelope,RotationZYX(0,0,M_PI/nphi));
 
@@ -116,34 +120,26 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
 
-  for(int iside=0;iside<2;iside++) {
-    double aside = 1.;
+  for(int iside=0;iside<2;iside++) {  // positive and negative z parts of detector
+    double aside = 1.;  // to do the reflection for negative z
     if(iside==1) aside=-1.;
 
 
   for(int itower=0;itower<nzdiv;itower++) {
+    if((iside==0)||(itower>0)) {
     //for(int itower=nzdiv-1;itower<nzdiv;itower++) {
-
+    //        if((itower==0)||(itower==nzdiv-1)) {
 
     std::cout<<"ITOWER is "<<itower<<std::endl;
 
-    //    if((itower==0)||(itower==nzdiv-1)) {
 
-    //each z division has a unique tower
-    string t_name;
-    if(iside==0 ) {
-      t_name = _toString(itower,"towerp%d");
-    }
-    else {
-      t_name = _toString(itower,"towerm%d");
-    }
-    DetElement tower_det(t_name,det_id);  // detector element for a tower
+
 
     // angle for tower at this z division with respect to x-y plane
     double aatheta = -1.*atan((itower*(delzt-delzb))/thick);
-    //    aatheta=M_PI/4.;
 
 
+    //if I create a mother that is a brass trapezoid, and make the fiber a daughter, I do not need to make a hole in the brass but if I make a mother that is air and place the brass trapezoid and the fiber separately as daughters to the air mother, then I do need to make a hole in the brass
 
 
 
@@ -168,55 +164,68 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     std::cout<<"half length in x at low z and y low edge "<<delzt<<" "<<std::endl;
     std::cout<<"half length in x at low z and y high edge "<<delzt<<" "<<std::endl;
     std::cout<<"polar angle "<<0.<<std::endl;
-    dd4hep::Trap towertrap((thick)/2.,aatheta,0.,inphil/2.,delzb/2.,delzb/2.,0.,outphil/2.,delzt/2.,delzt/2.,0.);
+
+    // tower envelope
+    dd4hep::Trap towertrap((thick)/2.,aatheta,0.,inphil/2.-tol,delzb/2.-tol,delzb/2.-tol,0.,outphil/2.-tol,delzt/2.-tol,delzt/2.-tol,0.);
+    dd4hep::Volume towerVol( "tower", towertrap, air);
+    towerVol.setVisAttributes(description, x_det.visStr());
+    string t_name = iside==0 ? _toString(itower,"towerp%d") : _toString(itower,"towerm%d");
+    DetElement tower_det(t_name,det_id);  // detector element for a tower
 
 
-    // needs a hole for fiber
-    dd4hep::Tube fiberhole = dd4hep::Tube(0.,fX_core.rmax(),thick);
-    // rotationzyx.  first a rotation of an angle phi around the z axis followed by a rotation of an angle theta around the y axis followed by a third rotation of an angle psi around the x axis (phi, theta,psi)
-    Transform3D tra(RotationZYX(0,aatheta,0.),Translation3D(0.,0.,0.));
-
-
-
-    //if I create a mother that is a brass trapezoid, and make the fiber a daughter, I do not need to make a hole in the brass but if I make a mother that is air and place the brass trapezoid and the fiber separately as daughters to the air mother, then I do need to make a hole in the brass
-    dd4hep::SubtractionSolid tower(towertrap,fiberhole,tra);
-
-
-    dd4hep::Volume towerVol( "tower", tower, description.material(fX_barrel.materialStr()) );
+    //passive
+    dd4hep::Trap absstrap((thick)/2.,aatheta,0.,inphil/2-2.*tol,delzb/2.-2.*tol,delzb/2.-2.*tol,0.,outphil/2.-2.*tol,delzt/2.-2.*tol,delzt/2.-2.*tol,0.);
+    dd4hep::Volume absVol( "towerAbsorber", absstrap, description.material(fX_barrel.materialStr()) );
     if(itower==0) std::cout<<"    material is "<<fX_barrel.materialStr()<<std::endl;
-    towerVol.setVisAttributes(description, fX_barrel.visStr());
+    absVol.setVisAttributes(description, fX_barrel.visStr());
+    string a_name = iside==0 ? _toString(itower,"absorberp%d") : _toString(itower,"absorberm%d");
+    DetElement abs_det(tower_det,a_name,det_id);  // detector element for absorber
 
 
 
-    // fibers
+    // hole for fiber
+    dd4hep::Tube fiberhole = dd4hep::Tube(0.,fX_hole.rmax(),thick/2.+10.);
+    dd4hep::Volume holeVol("hole", fiberhole, description.material(fX_hole.materialStr()));
+    holeVol.setVisAttributes(description, fX_hole.visStr());
+    string h_name = iside==0 ? _toString(itower,"holep%d") : _toString(itower,"holem%d");
+    DetElement hole_det(abs_det,h_name,det_id);  // detector element for absorber
 
-    
-    dd4hep::Tube fiber = dd4hep::Tube(0.,fX_core.rmin(),thick/2.);
 
+    // fiber
+    dd4hep::Tube fiber = dd4hep::Tube(0.,fX_core.rmax(),thick/2.+15.);
     std::cout<<" making fiber from "<<fX_core.materialStr()<<std::endl;
-    dd4hep::Volume coreVol("core", fiber, description.material(fX_core.materialStr()));
-
+    dd4hep::Volume fiberVol("core", fiber, description.material(fX_core.materialStr()));
     std::cout<<"fX_core.isSensitive is "<<fX_core.isSensitive()<<std::endl;
     if ( fX_core.isSensitive() ) {
       std::cout<<"setting DRSimple fiber sensitive "<<std::endl;
-            coreVol.setSensitiveDetector(sens);
+      fiberVol.setSensitiveDetector(sens);
     }
+    string f_name = iside==0 ? _toString(itower,"fiberp%d") : _toString(itower,"fiberm%d");
+    DetElement fiber_det(abs_det,f_name,det_id);  // detector element for absorber
+    fiberVol.setAttributes(description,fX_core.regionStr(),fX_core.limitsStr(),fX_core.visStr());
 
 
-    DetElement afiber(tower_det,"fiber",det_id);
-    afiber.setAttributes(description,coreVol,fX_core.regionStr(),fX_core.limitsStr(),fX_core.visStr());
 
 
+    // rotationzyx.  first a rotation of an angle phi around the z axis followed by a rotation of an angle theta around the y axis followed by a third rotation of an angle psi around the x axis (phi, theta,psi)
 
-    PlacedVolume fiber_phv = towerVol.placeVolume( coreVol, tra);
-    //fiber_pv.addPhysVolID("system",det_id);
-    // fiber_pv.addPhysVolID("barrel",0);
-    //  fiber_pv.addPhysVolID("side",iside);
-    //  fiber_pv.addPhysVolID("ieta",itower);
-    //  fiber_pv.addPhysVolID("module",nPhi+1);
+    Transform3D tra(RotationZYX(0,aatheta,0.),Translation3D(0.,0.,0.));
+    Transform3D tra2(RotationZYX(0,0.,0.),Translation3D(0.,0.,0.));
+
+
+    PlacedVolume fiber_phv = holeVol.placeVolume( fiberVol, tra2);
+    PlacedVolume hole_phv = absVol.placeVolume( holeVol, tra);
+    PlacedVolume abs_phv = towerVol.placeVolume( absVol, tra2);
+
 
     fiber_phv.addPhysVolID("fiber",1);
-    afiber.setPlacement(fiber_phv);
+    hole_phv.addPhysVolID("hole",1);
+    abs_phv.addPhysVolID("abs",1);
+
+    fiber_det.setPlacement(fiber_phv);
+    hole_det.setPlacement(hole_phv);
+    abs_det.setPlacement(abs_phv);
+
 
     
 
@@ -224,13 +233,14 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
     double mod_x_off = 0.;             
     double mod_y_off = inner_r + thick/2;  
-    double mod_z_off= delzm/2.;
+    //double mod_z_off= delzm/2.;
+    double mod_z_off= 0.;
 
 
     //for (int nPhi = 0; nPhi < 1; nPhi++) {
     std::cout<<"starting phi loop"<<std::endl;
     for (int nPhi = 0; nPhi < nphi; nPhi++) {
-      //      if((nPhi%2)==0) {
+      //            if((nPhi%2)==0) {
       double phi=nPhi*delphi;
       //std::cout<<"placing at phi "<<phi<<std::endl;
 
@@ -260,13 +270,13 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
       sd.setPlacement(pv);
       sdet.add(sd);
+      //}
+
+          }
+
+    //          }
+
       }
-
-      //    }
-
-    //      }
-
-
       } // end tower loop
 
   } // end side loop
