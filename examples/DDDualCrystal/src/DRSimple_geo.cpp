@@ -171,12 +171,13 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     towerVol.setVisAttributes(description, x_det.visStr());
     string t_name = iside==0 ? _toString(itower,"towerp%d") : _toString(itower,"towerm%d");
     DetElement tower_det(t_name,det_id);  // detector element for a tower
-
+    towerVol.setSensitiveDetector(sens);
 
     //passive
     dd4hep::Trap absstrap((thick)/2.,aatheta,0.,inphil/2-2.*tol,delzb/2.-2.*tol,delzb/2.-2.*tol,0.,outphil/2.-2.*tol,delzt/2.-2.*tol,delzt/2.-2.*tol,0.);
     dd4hep::Volume absVol( "towerAbsorber", absstrap, description.material(fX_barrel.materialStr()) );
     if(itower==0) std::cout<<"    material is "<<fX_barrel.materialStr()<<std::endl;
+
     absVol.setVisAttributes(description, fX_barrel.visStr());
     string a_name = iside==0 ? _toString(itower,"absorberp%d") : _toString(itower,"absorberm%d");
     DetElement abs_det(tower_det,a_name,det_id);  // detector element for absorber
@@ -184,7 +185,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
     // hole for fiber
-    dd4hep::Tube fiberhole = dd4hep::Tube(0.,fX_hole.rmax(),thick/2.+10.);
+    dd4hep::Tube fiberhole = dd4hep::Tube(0.,fX_hole.rmax(),thick/2.);
     dd4hep::Volume holeVol("hole", fiberhole, description.material(fX_hole.materialStr()));
     holeVol.setVisAttributes(description, fX_hole.visStr());
     string h_name = iside==0 ? _toString(itower,"holep%d") : _toString(itower,"holem%d");
@@ -192,13 +193,13 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
     // fiber
-    dd4hep::Tube fiber = dd4hep::Tube(0.,fX_core.rmax(),thick/2.+15.);
+    dd4hep::Tube fiber = dd4hep::Tube(0.,fX_core.rmax(),thick/2.);
     std::cout<<" making fiber from "<<fX_core.materialStr()<<std::endl;
-    dd4hep::Volume fiberVol("core", fiber, description.material(fX_core.materialStr()));
+    dd4hep::Volume fiberVol("fiber", fiber, description.material(fX_core.materialStr()));
     std::cout<<"fX_core.isSensitive is "<<fX_core.isSensitive()<<std::endl;
     if ( fX_core.isSensitive() ) {
       std::cout<<"setting DRSimple fiber sensitive "<<std::endl;
-      fiberVol.setSensitiveDetector(sens);
+      //fiberVol.setSensitiveDetector(sens);
     }
     string f_name = iside==0 ? _toString(itower,"fiberp%d") : _toString(itower,"fiberm%d");
     DetElement fiber_det(abs_det,f_name,det_id);  // detector element for absorber
@@ -219,8 +220,8 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
     fiber_phv.addPhysVolID("fiber",1);
-    hole_phv.addPhysVolID("hole",1);
-    abs_phv.addPhysVolID("abs",1);
+    //hole_phv.addPhysVolID("hole",1);
+    //abs_phv.addPhysVolID("abs",1);
 
     fiber_det.setPlacement(fiber_phv);
     hole_det.setPlacement(hole_phv);
