@@ -78,6 +78,7 @@ namespace dd4hep {
       //      if(thePrePVName.contains("slice")==0) {
 	  std::cout<<"entering DualCrystalAction"<<std::endl;
 	  std::cout<<" prevolume is "<<thePrePVName<<std::endl;
+	  std::cout<<" postvolume is "<<thePostPVName<<std::endl;
 	  std::cout<<" pid is "<<TrPDGid<<std::endl;
 	  //}
 

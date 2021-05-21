@@ -153,16 +153,16 @@ LB2 the half length in x at low z and y high edge,
 TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of the high y edge, and H2, LB2, LH2, TH2, the corresponding quantities at high z
   */
     std::cout<<"making trap for eta "<<itower<<std::endl;
-    std::cout<<"half thickness "<<(thick+0.1)/2.<<std::endl;
+    std::cout<<"half thickness "<<(thick)/2.<<std::endl;
     std::cout<<"polar angle "<<0.<<std::endl;
     std::cout<<"polar angle "<<aatheta<<" "<<std::endl;
-    std::cout<<"half length in y at low z "<<inphil<<" "<<std::endl;
-    std::cout<<"half length in x at low z and y low edge "<<delzb<<" "<<std::endl;
-    std::cout<<"half length in x at low z and y high edge "<<delzb<<" "<<std::endl;
+    std::cout<<"half length in y at low z "<<inphil/2.<<" "<<std::endl;
+    std::cout<<"half length in x at low z and y low edge "<<delzb/2.<<" "<<std::endl;
+    std::cout<<"half length in x at low z and y high edge "<<delzb/2.<<" "<<std::endl;
     std::cout<<"polar angle "<<0.<<" "<<std::endl;
-    std::cout<<"half length in y at low z "<<outphil<<" "<<std::endl;
-    std::cout<<"half length in x at low z and y low edge "<<delzt<<" "<<std::endl;
-    std::cout<<"half length in x at low z and y high edge "<<delzt<<" "<<std::endl;
+    std::cout<<"half length in y at high z "<<outphil/2.<<" "<<std::endl;
+    std::cout<<"half length in x at high z and y low edge "<<delzt/2.<<" "<<std::endl;
+    std::cout<<"half length in x at high z and y high edge "<<delzt/2.<<" "<<std::endl;
     std::cout<<"polar angle "<<0.<<std::endl;
 
     // tower envelope
@@ -171,7 +171,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     towerVol.setVisAttributes(description, x_det.visStr());
     string t_name = iside==0 ? _toString(itower,"towerp%d") : _toString(itower,"towerm%d");
     DetElement tower_det(t_name,det_id);  // detector element for a tower
-    towerVol.setSensitiveDetector(sens);
+    //towerVol.setSensitiveDetector(sens);
 
     //passive
     dd4hep::Trap absstrap((thick)/2.,aatheta,0.,inphil/2-2.*tol,delzb/2.-2.*tol,delzb/2.-2.*tol,0.,outphil/2.-2.*tol,delzt/2.-2.*tol,delzt/2.-2.*tol,0.);
@@ -199,7 +199,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
     std::cout<<"fX_core.isSensitive is "<<fX_core.isSensitive()<<std::endl;
     if ( fX_core.isSensitive() ) {
       std::cout<<"setting DRSimple fiber sensitive "<<std::endl;
-      //fiberVol.setSensitiveDetector(sens);
+      fiberVol.setSensitiveDetector(sens);
     }
     string f_name = iside==0 ? _toString(itower,"fiberp%d") : _toString(itower,"fiberm%d");
     DetElement fiber_det(abs_det,f_name,det_id);  // detector element for absorber
@@ -234,7 +234,6 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
     double mod_x_off = 0.;             
     double mod_y_off = inner_r + thick/2;  
-    //double mod_z_off= delzm/2.;
     double mod_z_off= 0.;
 
 
@@ -292,11 +291,11 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
 
-  std::cout<<"exiting DRS creator"<<std::endl;
+  std::cout<<"exiting DRSimple creator"<<std::endl;
 
   return sdet;
 }
 
 DECLARE_DETELEMENT(DD4hep_DRSimple,create_detector)
 
-DECLARE_DEPRECATED_DETELEMENT(DRsimple,create_detector)
+DECLARE_DEPRECATED_DETELEMENT(DRSimple,create_detector)

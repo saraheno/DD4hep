@@ -51,12 +51,12 @@ if (DD4HEP_USE_GEANT4)
     )
 
 
-  dd4hep_add_dictionary(G__DRcaloSiPM
-    SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/DRcaloSiPMHit.h 
-    LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
-    OUTPUT  ${LIBRARY_OUTPUT_PATH}
-    USES    DD4hep::DDCore DD4hep::DDG4 Geant4::Interface
-    )
+#  dd4hep_add_dictionary(G__DRcaloSiPM
+#    SOURCES ${DD4hep_DIR}/include/ROOT/Warnings.h src/DRcaloSiPMHit.h 
+#    LINKDEF ${DD4hep_DIR}/include/ROOT/LinkDef.h
+#    OUTPUT  ${LIBRARY_OUTPUT_PATH}
+#    USES    DD4hep::DDCore DD4hep::DDG4 Geant4::Interface
+#    )
 
 
 
@@ -76,7 +76,8 @@ dd4hep_configure_output ()
 #
 #---DDDualCrystal plugin library -------------------------------------------------------
 dd4hep_add_plugin ( DDDualCrystal
-    GENERATED G__DDDualCrystalCalorimeter.cxx G__DRcaloSiPM.cxx
+#    GENERATED G__DDDualCrystalCalorimeter.cxx G__DRcaloSiPM.cxx
+    GENERATED G__DDDualCrystalCalorimeter.cxx 
   SOURCES src/*.cpp src/plugins/*.cpp
   USES    DD4hep::DDCore DD4hep::DDAlign DD4hep::DDCond DD4hep::DDG4 DDDetectors
           ROOT::Core ROOT::Geom ROOT::GenVector CLHEP::CLHEP Geant4::Interface

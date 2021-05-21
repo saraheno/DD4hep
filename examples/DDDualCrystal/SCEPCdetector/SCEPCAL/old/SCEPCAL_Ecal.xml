@@ -17,26 +17,34 @@
 <!--                                                                        -->
 <!-- ====================================================================== -->
 
+<lccdd>
+  <!--  Definition of global dictionary constants          -->
+  <define>
+  </define>
 
+  <!--  Definition of the used visualization attributes    -->
+  <display>
+    <vis name="CrystalEcalBarrelVis"       alpha="1.0" r="1.0"  g="1.0"  b="0.0"  showDaughters="true" visible="false"/>
+    <vis name="CrystalEcalStaveVis"        alpha="1.0" r="0.0"  g="0.0"  b="1.0"  showDaughters="true" visible="true"/>
+    <vis name="CrystalEcalLayerVis"        alpha="1.0" r="0.8"  g="0.8"  b="0.0"  showDaughters="true" visible="true"/>
 
-  <detectors>
-    <detector id="DR_ID" name="DRSimple" type="DD4hep_DRSimple" readout="DRNoSegment" vis="Invisible">
+    <vis name="CrystalEcalSensitiveVis"    alpha="1.0" r="0.7"  g="0.3"  b="0.0"  showDaughters="false" visible="true"/>
+    <vis name="CrystalEcalAbsorberVis"     alpha="1.0" r="0.4"  g="0.4"  b="0.0"  showDaughters="false" visible="true"/>
 
+    <vis name="CrystalEcalEndcapVis"       alpha="1.0" r="0.77" g="0.74" b="0.86" showDaughters="true" visible="true"/>
+  </display>
 
- <comment>Hadronic Calorimeter Barrel</comment>
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="CrystalEcalBarrelHits">
+      <segmentation type="GridPhiEta" grid_size_eta="1.0*cm" phi_bins="1" />
+      <id>system:8,barrel:3,module:8,layer:6,slice:5,eta:32:-16,phi:-16</id>
+    </readout>        
+  </readouts>
 
+  <!--  Includes for sensitives and support                -->
+  <include ref="SCEPCAL_DRCrystal.xml"/>
 
-
-<!-- <dimensions numsides="1663" nz="382" rmin="DRinnerRadius" thickness="180" z_length="306." /> -->
-<dimensions numsides="32" nz="10" rmin="DRinnerRadius" thickness="180" z_length="306." />
-<!-- not in core and hole rmind is not used -->
-      <structure>
-        <core name="core" rmax="50.0*mm" rmin="80.0*mm" material="DR_Polystyrene" vis="CerenVis" sensitive="yes"/> 
-        <hole name="hole" rmax="51.0*mm" rmin="80.0*mm" material="Air" vis="GenericVis" sensitive="no"/> 
-      </structure>
- <barrel material="Copper" vis="TowerVis">
- </barrel>
-    </detector>
-  </detectors>
-
-
+<!--
+-->
+</lccdd>

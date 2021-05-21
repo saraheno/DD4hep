@@ -28,7 +28,12 @@
     <comment>The compact format for the SCEPCAL IDEA</comment>        
   </info>
 
-
+<define>
+        <constant name="world_side"             value="60000*mm"/>
+        <constant name="world_x"                value="world_side"/>
+        <constant name="world_y"                value="world_side"/>
+        <constant name="world_z"                value="world_side"/>
+</define>
  
   <properties>
     <matrix name="RINDEX__Air" coldim="2" values="  
@@ -795,7 +800,7 @@
 
 
   <comment>EM Calorimeters</comment>
-  <include ref="SCEPCAL/SCEPCAL_CrystalEcalBarrelOnly.xml"/> 
+  <include ref="SCEPCAL/SCEPCAL_ECAL.xml"/> 
 
   <comment>HCAL</comment>
   <include ref="SCEPCAL/SCEPCAL_HCAL.xml"/>

@@ -35,11 +35,11 @@
   </display>
 
   <readouts>
-    <readout name="DRcaloSiPMreadout">
-      <segmentation type="GridDRcalo"/>
-      <!-- Mendatory to use the first 32 bits for tower infos & the last 32 bits for fiber/SiPM infos -->
-      <id>system:5,eta:-8,phi:9,x:32:-7,y:-7,c:1,module:2</id>
-    </readout>
+<!--    <readout name="DRcaloSiPMreadout"> -->
+<!--      <segmentation type="GridDRcalo"/> -->
+  <!-- Mendatory to use the first 32 bits for tower infos & the last 32 bits for fiber/SiPM infos -->
+<!--      <id>system:5,eta:-8,phi:9,x:32:-7,y:-7,c:1,module:2</id> -->
+<!--    </readout> -->
     <readout name="DRNoSegment">
       <segmentation type="NoSegmentation"/>
       <id>system:3,fiber:1,barrel:1,side:1,ieta:11,iphi:11,ifiber:1,eta:-8,phi:9</id>
