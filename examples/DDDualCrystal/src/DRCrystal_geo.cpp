@@ -129,10 +129,6 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
     for(int itower=0;itower<nzdiv;itower++) {
-    //for(int itower=0;itower<1;itower++) {
-      //if((itower==0)||(itower==4)||(itower==nzdiv-1)) {
-    //for(int itower=nzdiv-1;itower<nzdiv;itower++) {
-    //        if((itower==0)||(itower==nzdiv-1)) {
 
 	std::cout<<"ITOWER is "<<itower<<std::endl;
 
@@ -140,7 +136,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
     // angle for tower at this z division with respect to x-y plane
-	//double aatheta = -1.*atan((itower*(delzt-delzb))/thick);
+
 	double aatheta = atan((itower*(delzt-delzb))/thick);
 
 
@@ -209,11 +205,6 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	    double inphill = 2*(r_bottoml+inner_r)*tan(delphi/2.);
 	    double outphill = 2*(r_topl+inner_r)*tan(delphi/2.);
 
-	    //double bottoml = itower==0 ? (inner_r+r_bottoml)/tan(aapsi) : (delzb-r_bottoml/tan(aatheta))+(r_bottoml/tan(aapsi));
-	    //double topl = itower==0 ? (inner_r+r_topl)/tan(aapsi) :(delzb-r_topl/tan(aatheta))+(r_topl/tan(aapsi));
-	    //double midl = itower==0 ? (inner_r+r_midl) : (delzb-r_midl/tan(aatheta))+(r_midl/	    
-
-
 
 	    double bottoml = itower==0 ? (inner_r+r_bottoml)/tan(aapsi) : delzb+(r_bottoml/tan(aapsi))-r_bottoml*tan(aatheta);
 	    double topl = itower==0 ? (inner_r+r_topl)/tan(aapsi) :  delzb+(r_topl/tan(aapsi))-r_topl*tan(aatheta);
@@ -221,29 +212,21 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	    double midl = itower==0 ? (inner_r+r_midl)/tan(aapsi) : delzb+(r_midl/tan(aapsi))-r_midl*tan(aatheta);
 
 
-	    //double xmidl= r_midl*tan(aatheta)+midl/2.;
-	    //double xmidl= itower==0 ? 0.: r_midl*tan(aatheta)+midl/2.;
-	    //double xmidl= itower==0 ? 0.: -1.*(0.5*thick-r_midl)*(tan(aatheta)+(1/tan(aapsi)));
-	    //double xmidl= itower==0 ? 0.: (1./2./tan(aapsi))*(0.5*thick-r_midl);
-	    //double xmidl= itower==0 ? 0.: (1./2./tan(aapsi))*(0.5*thick-r_midl);
-	    //double xmidl = l_num==1 ? 6. : -3.;
+
+	    double xmidt=0.5*(delzb+thick/tan(aapsi));
+	    double xmidl=0.5*(delzb+l_thickness/tan(aapsi));
+	    double xoffl=r_bottoml*tan(aatheta);
+	    double dxmidl= -1.*(xmidt-xmidl-xoffl);
 
 
-	    double xmidlt=0.5*(delzb+thick/tan(aapsi));
-	    double xmidll=0.5*(delzb+l_thickness/tan(aapsi));
-	    double xoff=r_bottoml*tan(aatheta);
-	    double xmidl=-1.*(xmidlt-xmidll-xoff);
-
-
-	    std::cout<<"   XMIDL is "<<xmidl<<" "<<xmidlt<<" "<<xmidll<<" "<<xoff<<std::endl;
+	    std::cout<<"  dXMIDL is "<<dxmidl<<" "<<xmidt<<" "<<xmidl<<" "<<xoffl<<std::endl;
 
 	    double ymidl=0.;
-	    //double zmidl=0.;
-	    //double zmidl= l_lum==0 ? r_midl/2. : -1.*r_midl/2.;
+
 	    double zmidl=-thick/2.+r_midl+0.5*tol;
 	    std::cout<<"will robinsock thick r_midl r_bottoml "<<thick<<" "<<r_midl<<" "<<r_bottoml<<std::endl;
 
-	    Position   l_pos(xmidl,ymidl,zmidl);      // Position of the layer.
+	    Position   l_pos(dxmidl,ymidl,zmidl);      // Position of the layer.
 	    
 
 	    std::cout<<"   layer "<<l_num<<std::endl;
@@ -267,6 +250,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
         // Loop over the sublayers or slices for this layer.
 	    int s_num = 1;
 	    double r_bottoms=r_bottoml;
+	    double r_bottoms2=0;  //relative to slice bottom
 	    for(xml_coll_t si(x_layer,_U(slice)); si; ++si)  {
 	      xml_comp_t x_slice = si;
 	      string     s_name  = _toString(s_num,"slice%d");
@@ -282,31 +266,27 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	      double outphils = 2*(r_tops+r_bottoml+inner_r)*tan(delphi/2.);
 
 
+	      double bottoms = itower==0 ? (inner_r+r_bottoms)/tan(aapsi) : delzb+(r_bottoms/tan(aapsi))-r_bottoms*tan(aatheta);
+	      double tops = itower==0 ? (inner_r+r_tops)/tan(aapsi) :  delzb+(r_tops/tan(aapsi))-r_tops*tan(aatheta);
+	      double mids = itower==0 ? (inner_r+r_mids)/tan(aapsi) : delzb+(r_mids/tan(aapsi))-r_mids*tan(aatheta);
 
 
-	      //double bottoms = itower==0 ? (inner_r+r_bottoms)/tan(aapsi) : (delzb-r_bottoms/tan(aatheta))+(r_bottoms/tan(aapsi));
-	      //double tops = itower==0 ? (inner_r+r_tops)/tan(aapsi) : (delzb-r_tops/tan(aatheta))+(r_tops/tan(aapsi));
-	      //double mids = itower==0 ? (inner_r+r_mids)/tan(aapsi) : (delzb-r_mids/tan(aatheta))+(r_mids/tan(aapsi));
-
-
-
-	    double bottoms = itower==0 ? (inner_r+r_bottoms)/tan(aapsi) : delzb+(r_bottoms/tan(aapsi))-r_bottoms*tan(aatheta);
-	    double tops = itower==0 ? (inner_r+r_tops)/tan(aapsi) :  delzb+(r_tops/tan(aapsi))-r_tops*tan(aatheta);
-	    double mids = itower==0 ? (inner_r+r_mids)/tan(aapsi) : delzb+(r_mids/tan(aapsi))-r_mids*tan(aatheta);
+	      //double xmidt=0.5*(delzb+thick/tan(aapsi));
+	      //double xmidl=0.5*(delzb+l_thickness/tan(aapsi));
+	      double xmids=0.5*(bottoml+s_thickness/tan(aapsi));
+	      double xoffs=r_bottoms2*tan(aatheta);
+	      std::cout<<" xmidl xmids xoffs "<<xmidl<<" "<<xmids<<" "<<xoffs<<std::endl;
+	      double dxmids= -1.*(xmidl-xmids-xoffs);
+	      std::cout<<" dxmids xmidl xmids xoffs "<<dxmids<<" "<<xmidl<<" "<<xmids<<" "<<xoffs<<std::endl;
 
 
 
 
-	      //double xmids= r_mids*tan(aatheta)+mids/2.;
-	      //double xmids= itower==0 ? 0.: r_mids*tan(aatheta)+mids/2.;
-	      //double xmids=0.;
-	    double xmids= itower==0 ? 0.: -(1./2./tan(aapsi))*(0.5*l_thickness-r_bottoms);
 	      double ymids=0.;
-	      //double zmids=r_mids/2.;
-	      //double zmids=0.;
+
 	      double zmids=-l_thickness/2.+(r_mids-r_bottoml)+0.5*tol;
 
-	      std::cout<<"      will robinsock l_thickness r_mids r_bottoms "<<l_thickness<<" "<<r_mids<<" "<<r_bottoms<<std::endl;
+
 
 	      std::cout<<"      sublayer "<<s_num<<std::endl;
 	      std::cout<<"         half thickness "<<(s_thickness)/2.<<std::endl;
@@ -322,7 +302,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 	
 
-	      Position   s_pos(xmids,ymids,zmids);      // Position of the layer.
+	      Position   s_pos(dxmids,ymids,zmids);      // Position of the layer.
 	      Trap s_box((s_thickness)/2.,aatheta,0.,inphils/2.-2.*tol,bottoms/2.-2.*tol,bottoms/2.-2.*tol,0.,outphils/2.-2.*tol,tops/2.-2.*tol,tops/2.-2.*tol,0.);
 
 
@@ -341,6 +321,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	      slice.setPlacement(slice_phv);
           // Increment Z position of slice.
 	      r_bottoms += s_thickness;
+	      r_bottoms2 += s_thickness;
 
           // Increment slice number.
 	      ++s_num;
@@ -379,12 +360,11 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
     for (int nPhi = 0; nPhi < nphi; nPhi++) {
-      //	std::cout<<"starting phi loop"<<std::endl;
-	//for (int nPhi = 0; nphi < nphi; nPhi++) {
+
       if((nPhi==0)||(nPhi==(nphi/2))) {
 	  //if(nPhi%2==0) {
 	  double phi=nPhi*delphi;
-      //std::cout<<"placing at phi "<<phi<<std::endl;
+
 
 	  double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
 	  double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
@@ -395,7 +375,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	    std::cout<<"m_pos_z is "<<m_pos_z<<std::endl;
 	  }
 
-      //Transform3D tr(RotationZYX(0,phi,M_PI*0.5),Translation3D(m_pos_x,m_pos_y,m_pos_z));
+
 	  //double zrot=-1.*aside*M_PI*0.5;
 	  double zrot=aside*M_PI*0.5;
 	  //double zrot=0.;
