@@ -123,12 +123,13 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
 
-  for(int iside=0;iside<2;iside++) {  // positive and negative z parts of detector
+  for(int iside=0;iside<1;iside++) {  // positive and negative z parts of detector
     double aside = 1.;  // to do the reflection for negative z
     if(iside==1) aside=-1.;
 
 
-    for(int itower=0;itower<nzdiv;itower++) {
+    // for(int itower=0;itower<nzdiv;itower++) {
+    for(int itower=1;itower<2;itower++) {
 
 	std::cout<<"ITOWER is "<<itower<<std::endl;
 
@@ -172,7 +173,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	std::cout<<"   psi angle psi c  at far edge "<<aapsi<<" "<<(M_PI/2.)-aapsi<<std::endl;
 
     // tower envelope
-	dd4hep::Trap towertrap((thick)/2.,aatheta,0.,inphil/2.-tol,delzb/2.-tol,delzb/2.-tol,0.,outphil/2.-tol,delzt/2.-tol,delzt/2.-tol,0.);
+	dd4hep::Trap towertrap((thick)/2.-tol,aatheta,0.,inphil/2.-tol,delzb/2.-tol,delzb/2.-tol,0.,outphil/2.-tol,delzt/2.-tol,delzt/2.-tol,0.);
 	dd4hep::Volume towerVol( "tower", towertrap, air);
   std::cout<<"   tower visstr is "<<x_towers.visStr()<<std::endl;
 	towerVol.setVisAttributes(description, x_towers.visStr());
@@ -208,15 +209,16 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 	    double bottoml = itower==0 ? (inner_r+r_bottoml)/tan(aapsi) : delzb+(r_bottoml/tan(aapsi))-r_bottoml*tan(aatheta);
 	    double topl = itower==0 ? (inner_r+r_topl)/tan(aapsi) :  delzb+(r_topl/tan(aapsi))-r_topl*tan(aatheta);
-	    std::cout<<"will robinson "<<delzb+(r_topl/tan(aapsi))<<" "<<r_topl*tan(aatheta)<<std::endl;
 	    double midl = itower==0 ? (inner_r+r_midl)/tan(aapsi) : delzb+(r_midl/tan(aapsi))-r_midl*tan(aatheta);
 
 
 
-	    double xmidt=0.5*(delzb+thick/tan(aapsi));
-	    double xmidl=0.5*(delzb+l_thickness/tan(aapsi));
-	    double xoffl=r_bottoml*tan(aatheta);
-	    double dxmidl= -1.*(xmidt-xmidl-xoffl);
+	    double xmidt=0.5*(delzb+thick/2./tan(aapsi));
+	    //double xmidl=0.5*(delzb+l_thickness/tan(aapsi));
+	    double xmidl=0.5*(bottoml+l_thickness/2./tan(aapsi));
+	    double xoffl=r_bottoml/2.*tan(aatheta);
+	    double tweek=0;
+	    double dxmidl= -1.*(xmidt-xmidl-xoffl)+tweek;
 
 
 	    std::cout<<"  dXMIDL is "<<dxmidl<<" "<<xmidt<<" "<<xmidl<<" "<<xoffl<<std::endl;
@@ -243,8 +245,8 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	
 
 
-	    Trap l_box((l_thickness)/2.-2.*tol,aatheta,0.,inphill/2.-2.*tol,bottoml/2.-2.*tol,bottoml/2.-2.*tol,0.,outphill/2.-2.*tol,topl/2.-2.*tol,topl/2.-2.*tol,0.);
-	    Volume     l_vol(l_name,l_box,air);
+	    dd4hep::Trap l_box((l_thickness)/2.-2.*tol,aatheta,0.,inphill/2.-2.*tol,bottoml/2.-2.*tol,bottoml/2.-2.*tol,0.,outphill/2.-2.*tol,topl/2.-2.*tol,topl/2.-2.*tol,0.);
+	    dd4hep::Volume     l_vol(l_name,l_box,air);
 	    DetElement layer(tower_det, l_name, det_id);
 
         // Loop over the sublayers or slices for this layer.
@@ -262,8 +264,8 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	      
 
 
-	      double inphils = 2*(r_bottoms+r_bottoml+inner_r)*tan(delphi/2.);
-	      double outphils = 2*(r_tops+r_bottoml+inner_r)*tan(delphi/2.);
+	      double inphils = 2*(r_bottoms+inner_r)*tan(delphi/2.);
+	      double outphils = 2*(r_tops+inner_r)*tan(delphi/2.);
 
 
 	      double bottoms = itower==0 ? (inner_r+r_bottoms)/tan(aapsi) : delzb+(r_bottoms/tan(aapsi))-r_bottoms*tan(aatheta);
@@ -273,18 +275,18 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 	      //double xmidt=0.5*(delzb+thick/tan(aapsi));
 	      //double xmidl=0.5*(delzb+l_thickness/tan(aapsi));
-	      double xmids=0.5*(bottoml+s_thickness/tan(aapsi));
-	      double xoffs=r_bottoms2*tan(aatheta);
+	      double xmids=0.5*(bottoml+s_thickness/2./tan(aapsi));
+	      double xoffs=r_bottoms2/2.*tan(aatheta);
 	      std::cout<<" xmidl xmids xoffs "<<xmidl<<" "<<xmids<<" "<<xoffs<<std::endl;
 	      double dxmids= -1.*(xmidl-xmids-xoffs);
-	      std::cout<<" dxmids xmidl xmids xoffs "<<dxmids<<" "<<xmidl<<" "<<xmids<<" "<<xoffs<<std::endl;
+	      //std::cout<<" dxmids xmidl xmids xoffs "<<dxmids<<" "<<xmidl<<" "<<xmids<<" "<<xoffs<<std::endl;
 
 
 
 
 	      double ymids=0.;
 
-	      double zmids=-l_thickness/2.+(r_mids-r_bottoml)+0.5*tol;
+	      double zmids=-l_thickness/2.+(r_mids-r_bottoml);
 
 
 
@@ -303,10 +305,10 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	
 
 	      Position   s_pos(dxmids,ymids,zmids);      // Position of the layer.
-	      Trap s_box((s_thickness)/2.,aatheta,0.,inphils/2.-2.*tol,bottoms/2.-2.*tol,bottoms/2.-2.*tol,0.,outphils/2.-2.*tol,tops/2.-2.*tol,tops/2.-2.*tol,0.);
+	      dd4hep::Trap s_box((s_thickness)/2.-3.*tol,aatheta,0.,inphils/2.-3.*tol,bottoms/2.-3.*tol,bottoms/2.-3.*tol,0.,outphils/2.-3.*tol,tops/2.-3.*tol,tops/2.-3.*tol,0.);
 
 
-	      Volume     s_vol(s_name,s_box,description.material(x_slice.materialStr()));
+	      dd4hep::Volume     s_vol(s_name,s_box,description.material(x_slice.materialStr()));
 	      DetElement slice(layer,s_name,det_id);
 
 	      if ( x_slice.isSensitive() ) {
@@ -359,9 +361,10 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	double mod_z_off= 0.;
 
 
-    for (int nPhi = 0; nPhi < nphi; nPhi++) {
+	//for (int nPhi = 0; nPhi < nphi; nPhi++) {
+    for (int nPhi = 0; nPhi < 1; nPhi++) {
 
-      if((nPhi==0)||(nPhi==(nphi/2))) {
+      //if((nPhi==0)||(nPhi==(nphi/2))) {
 	  //if(nPhi%2==0) {
 	  double phi=nPhi*delphi;
 
@@ -393,8 +396,8 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 	  sd.setPlacement(pv);
 	  sdet.add(sd);
-      }
-	}
+	  //}
+    }
       
 
     //          }
