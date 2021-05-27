@@ -123,14 +123,14 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
 
-  for(int iside=0;iside<1;iside++) {  // positive and negative z parts of detector
+  for(int iside=0;iside<2;iside++) {  // positive and negative z parts of detector
     double aside = 1.;  // to do the reflection for negative z
     if(iside==1) aside=-1.;
 
 
-    //    for(int itower=0;itower<nzdiv;itower++) {
-    for(int itower=0;itower<1;itower++) {
-      if((iside==0)||(itower>0)) {
+    for(int itower=0;itower<nzdiv;itower++) {
+    //for(int itower=0;itower<1;itower++) {
+      //if((itower==0)||(itower==4)||(itower==nzdiv-1)) {
     //for(int itower=nzdiv-1;itower<nzdiv;itower++) {
     //        if((itower==0)||(itower==nzdiv-1)) {
 
@@ -140,7 +140,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
     // angle for tower at this z division with respect to x-y plane
-	double aatheta = -1.*atan((itower*(delzt-delzb))/thick);
+	//double aatheta = -1.*atan((itower*(delzt-delzb))/thick);
+	double aatheta = atan((itower*(delzt-delzb))/thick);
 
 
     //if I create a mother that is a brass trapezoid, and make the fiber a daughter, I do not need to make a hole in the brass but if I make a mother that is air and place the brass trapezoid and the fiber separately as daughters to the air mother, then I do need to make a hole in the brass
@@ -156,27 +157,29 @@ LB1 the half length in x at low z and y low edge,
 LB2 the half length in x at low z and y high edge, 
 TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of the high y edge, and H2, LB2, LH2, TH2, the corresponding quantities at high z
   */
-	std::cout<<" tower envelope "<<std::endl;
-	std::cout<<"making trap for eta "<<itower<<std::endl;
-	std::cout<<"half thickness "<<(thick)/2.<<std::endl;
-	std::cout<<"polar angle "<<aatheta<<" "<<std::endl;
-	std::cout<<"half length in y at low z "<<inphil/2.<<" "<<std::endl;
-	std::cout<<"half length in x at low z and y low edge "<<delzb/2.<<" "<<std::endl;
-	std::cout<<"half length in x at low z and y high edge "<<delzb/2.<<" "<<std::endl;
-	std::cout<<"polar angle "<<0.<<" "<<std::endl;
-	std::cout<<"half length in y at high z "<<outphil/2.<<" "<<std::endl;
-	std::cout<<"half length in x at high z and y low edge "<<delzt/2.<<" "<<std::endl;
-	std::cout<<"half length in x at high z and y high edge "<<delzt/2.<<" "<<std::endl;
-	std::cout<<"polar angle "<<0.<<std::endl;
+	std::cout<<"   tower envelope "<<std::endl;
+	std::cout<<"   making trap for eta "<<itower<<std::endl;
+	std::cout<<"   half thickness "<<(thick)/2.<<std::endl;
+	std::cout<<"   polar angle "<<aatheta<<" "<<std::endl;
+	std::cout<<"   half length in y at low z "<<inphil/2.<<" "<<std::endl;
+	std::cout<<"   half length in x at low z and y low edge "<<delzb/2.<<" "<<std::endl;
+	std::cout<<"   half length in x at low z and y high edge "<<delzb/2.<<" "<<std::endl;
+	std::cout<<"   polar angle "<<0.<<" "<<std::endl;
+	std::cout<<"   half length in y at high z "<<outphil/2.<<" "<<std::endl;
+	std::cout<<"   half length in x at high z and y low edge "<<delzt/2.<<" "<<std::endl;
+	std::cout<<"   half length in x at high z and y high edge "<<delzt/2.<<" "<<std::endl;
+	std::cout<<"   polar angle "<<0.<<std::endl;
 
 
-	double aapsi = atan(thick/(delzt+thick*tan(aatheta)-delzb));
-	std::cout<<" angle at far edge "<<aapsi<<std::endl;
+	double aapsi = itower==0 ? atan(thick/(delzt-delzb)) : atan(thick/(delzt+thick*tan(aatheta)-delzb));
+
+	std::cout<<"   psi angle psi c  at far edge "<<aapsi<<" "<<(M_PI/2.)-aapsi<<std::endl;
 
     // tower envelope
 	dd4hep::Trap towertrap((thick)/2.,aatheta,0.,inphil/2.-tol,delzb/2.-tol,delzb/2.-tol,0.,outphil/2.-tol,delzt/2.-tol,delzt/2.-tol,0.);
 	dd4hep::Volume towerVol( "tower", towertrap, air);
-	towerVol.setVisAttributes(description, x_det.visStr());
+  std::cout<<"   tower visstr is "<<x_towers.visStr()<<std::endl;
+	towerVol.setVisAttributes(description, x_towers.visStr());
 	string t_name = iside==0 ? _toString(itower,"towerp%d") : _toString(itower,"towerm%d");
 	DetElement tower_det(t_name,det_id);  // detector element for a tower
 	towerVol.setSensitiveDetector(sens);
@@ -187,6 +190,9 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	double r_bottoml  = 0.;
 	int l_num = 1;
 	for(xml_coll_t li(x_det,_U(layer)); li; ++li)  {
+	  //xml_coll_t li(x_det,_U(layer));
+	  //int ihate=0;
+	  // while(ihate>1) {
 	  xml_comp_t x_layer = li;
 	  int repeat = x_layer.repeat();
       // Loop over number of repeats for this layer.
@@ -195,30 +201,66 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	    double l_thickness = layering.layer(l_num-1)->thickness();  // Layer's thickness.
 
 	// find top and bottom lengths at this position and center
+        // relative to tower bottom
 	    double r_topl=r_bottoml + l_thickness;
 	    double r_midl=r_bottoml + l_thickness/2.;
-	    double bottoml = itower==0 ? delzb+r_bottoml/tan(aapsi) : (delzb-r_bottoml/tan(aatheta))+(r_bottoml/tan(aapsi));
-	    double topl = itower==0 ? delzt+r_topl/tan(aapsi) :(delzb-r_topl/tan(aatheta))+(r_topl/tan(aapsi));
-	    double midl = itower==0 ? delzm+r_midl/tan(aapsi) : (delzb-r_midl/tan(aatheta))+(r_midl/tan(aapsi));
-	    double xmidl= r_midl*tan(aatheta)+midl/2.;
-	    double ymidl=0.;
-	    double zmidl=r_midl/2.;
 
-	    std::cout<<" layer "<<l_num<<std::endl;
-	    std::cout<<"half thickness "<<(l_thickness)/2.<<std::endl;
-	    std::cout<<"polar angle "<<aatheta<<" "<<std::endl;
-	    std::cout<<"half length in y at low z "<<inphil/2.<<" "<<std::endl;
-	    std::cout<<"half length in x at low z and y low edge "<<bottoml/2.<<" "<<std::endl;
-	    std::cout<<"half length in x at low z and y high edge "<<bottoml/2.<<" "<<std::endl;
-	    std::cout<<"polar angle "<<0.<<" "<<std::endl;
-	    std::cout<<"half length in y at high z "<<outphil/2.<<" "<<std::endl;
-	    std::cout<<"half length in x at high z and y low edge "<<topl/2.<<" "<<std::endl;
-	    std::cout<<"half length in x at high z and y high edge "<<topl/2.<<" "<<std::endl;
-	    std::cout<<"polar angle "<<0.<<std::endl;
+
+	    double inphill = 2*(r_bottoml+inner_r)*tan(delphi/2.);
+	    double outphill = 2*(r_topl+inner_r)*tan(delphi/2.);
+
+	    //double bottoml = itower==0 ? (inner_r+r_bottoml)/tan(aapsi) : (delzb-r_bottoml/tan(aatheta))+(r_bottoml/tan(aapsi));
+	    //double topl = itower==0 ? (inner_r+r_topl)/tan(aapsi) :(delzb-r_topl/tan(aatheta))+(r_topl/tan(aapsi));
+	    //double midl = itower==0 ? (inner_r+r_midl) : (delzb-r_midl/tan(aatheta))+(r_midl/	    
+
+
+
+	    double bottoml = itower==0 ? (inner_r+r_bottoml)/tan(aapsi) : delzb+(r_bottoml/tan(aapsi))-r_bottoml*tan(aatheta);
+	    double topl = itower==0 ? (inner_r+r_topl)/tan(aapsi) :  delzb+(r_topl/tan(aapsi))-r_topl*tan(aatheta);
+	    std::cout<<"will robinson "<<delzb+(r_topl/tan(aapsi))<<" "<<r_topl*tan(aatheta)<<std::endl;
+	    double midl = itower==0 ? (inner_r+r_midl)/tan(aapsi) : delzb+(r_midl/tan(aapsi))-r_midl*tan(aatheta);
+
+
+	    //double xmidl= r_midl*tan(aatheta)+midl/2.;
+	    //double xmidl= itower==0 ? 0.: r_midl*tan(aatheta)+midl/2.;
+	    //double xmidl= itower==0 ? 0.: -1.*(0.5*thick-r_midl)*(tan(aatheta)+(1/tan(aapsi)));
+	    //double xmidl= itower==0 ? 0.: (1./2./tan(aapsi))*(0.5*thick-r_midl);
+	    //double xmidl= itower==0 ? 0.: (1./2./tan(aapsi))*(0.5*thick-r_midl);
+	    //double xmidl = l_num==1 ? 6. : -3.;
+
+
+	    double xmidlt=0.5*(delzb+thick/tan(aapsi));
+	    double xmidll=0.5*(delzb+l_thickness/tan(aapsi));
+	    double xoff=r_bottoml*tan(aatheta);
+	    double xmidl=-1.*(xmidlt-xmidll-xoff);
+
+
+	    std::cout<<"   XMIDL is "<<xmidl<<" "<<xmidlt<<" "<<xmidll<<" "<<xoff<<std::endl;
+
+	    double ymidl=0.;
+	    //double zmidl=0.;
+	    //double zmidl= l_lum==0 ? r_midl/2. : -1.*r_midl/2.;
+	    double zmidl=-thick/2.+r_midl+0.5*tol;
+	    std::cout<<"will robinsock thick r_midl r_bottoml "<<thick<<" "<<r_midl<<" "<<r_bottoml<<std::endl;
+
+	    Position   l_pos(xmidl,ymidl,zmidl);      // Position of the layer.
+	    
+
+	    std::cout<<"   layer "<<l_num<<std::endl;
+	    std::cout<<"      half thickness "<<(l_thickness)/2.<<std::endl;
+	    std::cout<<"      polar angle "<<aatheta<<" "<<std::endl;
+	    std::cout<<"      half length in y at low z "<<inphill/2.<<" "<<std::endl;
+	    std::cout<<"      half length in x at low z and y low edge "<<bottoml/2.<<" "<<std::endl;
+	    std::cout<<"      half length in x at low z and y high edge "<<bottoml/2.<<" "<<std::endl;
+	    std::cout<<"      polar angle "<<0.<<" "<<std::endl;
+	    std::cout<<"      half length in y at high z "<<outphill/2.<<" "<<std::endl;
+	    std::cout<<"      half length in x at high z and y low edge "<<topl/2.<<" "<<std::endl;
+	    std::cout<<"      half length in x at high z and y high edge "<<topl/2.<<" "<<std::endl;
+	    std::cout<<"      polar angle "<<0.<<std::endl;
 	
 
-	    Position   l_pos(ymidl,xmidl,zmidl);      // Position of the layer.
-	    Trap l_box((l_thickness)/2.,aatheta,0.,inphil/2.-2.*tol,bottoml/2.-2.*tol,bottoml/2.-2.*tol,0.,outphil/2.-2.*tol,topl/2.-2.*tol,topl/2.-2.*tol,0.);
+
+	    Trap l_box((l_thickness)/2.-2.*tol,aatheta,0.,inphill/2.-2.*tol,bottoml/2.-2.*tol,bottoml/2.-2.*tol,0.,outphill/2.-2.*tol,topl/2.-2.*tol,topl/2.-2.*tol,0.);
 	    Volume     l_vol(l_name,l_box,air);
 	    DetElement layer(tower_det, l_name, det_id);
 
@@ -230,34 +272,58 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	      string     s_name  = _toString(s_num,"slice%d");
 	      double     s_thickness = x_slice.thickness();
 
-
+	      // this is relative to tower bottom, not layer bottom
 	      double r_tops=r_bottoms + s_thickness;
 	      double r_mids=r_bottoms + s_thickness/2.;
 	      
-	      double bottoms = itower==0 ?delzb+ r_bottoms/tan(aapsi) : (delzb-r_bottoms/tan(aatheta))+(r_bottoms/tan(aapsi));
-	      double tops = itower==0 ? delzt+r_tops/tan(aapsi) : (delzb-r_tops/tan(aatheta))+(r_tops/tan(aapsi));
-	      double mids = itower==0 ? delzm+r_mids/tan(aapsi) : (delzb-r_mids/tan(aatheta))+(r_mids/tan(aapsi));
-	      double xmids= r_mids*tan(aatheta)+mids/2.;
+
+
+	      double inphils = 2*(r_bottoms+r_bottoml+inner_r)*tan(delphi/2.);
+	      double outphils = 2*(r_tops+r_bottoml+inner_r)*tan(delphi/2.);
+
+
+
+
+	      //double bottoms = itower==0 ? (inner_r+r_bottoms)/tan(aapsi) : (delzb-r_bottoms/tan(aatheta))+(r_bottoms/tan(aapsi));
+	      //double tops = itower==0 ? (inner_r+r_tops)/tan(aapsi) : (delzb-r_tops/tan(aatheta))+(r_tops/tan(aapsi));
+	      //double mids = itower==0 ? (inner_r+r_mids)/tan(aapsi) : (delzb-r_mids/tan(aatheta))+(r_mids/tan(aapsi));
+
+
+
+	    double bottoms = itower==0 ? (inner_r+r_bottoms)/tan(aapsi) : delzb+(r_bottoms/tan(aapsi))-r_bottoms*tan(aatheta);
+	    double tops = itower==0 ? (inner_r+r_tops)/tan(aapsi) :  delzb+(r_tops/tan(aapsi))-r_tops*tan(aatheta);
+	    double mids = itower==0 ? (inner_r+r_mids)/tan(aapsi) : delzb+(r_mids/tan(aapsi))-r_mids*tan(aatheta);
+
+
+
+
+	      //double xmids= r_mids*tan(aatheta)+mids/2.;
+	      //double xmids= itower==0 ? 0.: r_mids*tan(aatheta)+mids/2.;
+	      //double xmids=0.;
+	    double xmids= itower==0 ? 0.: -(1./2./tan(aapsi))*(0.5*l_thickness-r_bottoms);
 	      double ymids=0.;
-	      double zmids=r_mids/2.;
+	      //double zmids=r_mids/2.;
+	      //double zmids=0.;
+	      double zmids=-l_thickness/2.+(r_mids-r_bottoml)+0.5*tol;
 
+	      std::cout<<"      will robinsock l_thickness r_mids r_bottoms "<<l_thickness<<" "<<r_mids<<" "<<r_bottoms<<std::endl;
 
-	      std::cout<<" sublayer "<<s_num<<std::endl;
-	      std::cout<<"half thickness "<<(s_thickness)/2.<<std::endl;
-	      std::cout<<"polar angle "<<aatheta<<" "<<std::endl;
-	      std::cout<<"half length in y at low z "<<inphil/2.<<" "<<std::endl;
-	      std::cout<<"half length in x at low z and y low edge "<<bottoms/2.<<" "<<std::endl;
-	      std::cout<<"half length in x at low z and y high edge "<<bottoms/2.<<" "<<std::endl;
-	      std::cout<<"polar angle "<<0.<<" "<<std::endl;
-	      std::cout<<"half length in y at high z "<<outphil/2.<<" "<<std::endl;
-	      std::cout<<"half length in x at high z and y low edge "<<tops/2.<<" "<<std::endl;
-	      std::cout<<"half length in x at high z and y high edge "<<tops/2.<<" "<<std::endl;
-	      std::cout<<"polar angle "<<0.<<std::endl;
+	      std::cout<<"      sublayer "<<s_num<<std::endl;
+	      std::cout<<"         half thickness "<<(s_thickness)/2.<<std::endl;
+	      std::cout<<"         polar angle "<<aatheta<<" "<<std::endl;
+	      std::cout<<"         half length in y at low z "<<inphils/2.<<" "<<std::endl;
+	      std::cout<<"         half length in x at low z and y low edge "<<bottoms/2.<<" "<<std::endl;
+	      std::cout<<"         half length in x at low z and y high edge "<<bottoms/2.<<" "<<std::endl;
+	      std::cout<<"         polar angle "<<0.<<" "<<std::endl;
+	      std::cout<<"         half length in y at high z "<<outphils/2.<<" "<<std::endl;
+	      std::cout<<"         half length in x at high z and y low edge "<<tops/2.<<" "<<std::endl;
+	      std::cout<<"         half length in x at high z and y high edge "<<tops/2.<<" "<<std::endl;
+	      std::cout<<"         polar angle "<<0.<<std::endl;
 
 	
 
-	      Position   s_pos(ymids,xmids,zmids);      // Position of the layer.
-	      Trap s_box((s_thickness)/2.,aatheta,0.,inphil/2.-2.*tol,bottoms/2.-2.*tol,bottoms/2.-2.*tol,0.,outphil/2.-2.*tol,tops/2.-2.*tol,tops/2.-2.*tol,0.);
+	      Position   s_pos(xmids,ymids,zmids);      // Position of the layer.
+	      Trap s_box((s_thickness)/2.,aatheta,0.,inphils/2.-2.*tol,bottoms/2.-2.*tol,bottoms/2.-2.*tol,0.,outphils/2.-2.*tol,tops/2.-2.*tol,tops/2.-2.*tol,0.);
 
 
 	      Volume     s_vol(s_name,s_box,description.material(x_slice.materialStr()));
@@ -266,6 +332,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	      if ( x_slice.isSensitive() ) {
 		s_vol.setSensitiveDetector(sens);
           }
+  std::cout<<"          slice visstr is "<<x_slice.visStr()<<std::endl;
 	      slice.setAttributes(description,s_vol,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 
           // Slice placement.
@@ -282,6 +349,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
         // Set region, limitset, and vis of layer.
+  std::cout<<" layer visstr is "<<x_layer.visStr()<<std::endl;
 	    layer.setAttributes(description,l_vol,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
 
 	    PlacedVolume layer_phv = towerVol.placeVolume(l_vol,l_pos);
@@ -297,10 +365,8 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	}
       
 
-    // Set stave visualization.
-	if ( x_towers )   {
-	  towerVol.setVisAttributes(description.visAttributes(x_towers.visStr()));
-	}
+
+
 
 
     
@@ -312,10 +378,11 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	double mod_z_off= 0.;
 
 
-    for (int nPhi = 0; nPhi < 1; nPhi++) {
-	std::cout<<"starting phi loop"<<std::endl;
+    for (int nPhi = 0; nPhi < nphi; nPhi++) {
+      //	std::cout<<"starting phi loop"<<std::endl;
 	//for (int nPhi = 0; nphi < nphi; nPhi++) {
-      //            if((nPhi%2)==0) {
+      if((nPhi==0)||(nPhi==(nphi/2))) {
+	  //if(nPhi%2==0) {
 	  double phi=nPhi*delphi;
       //std::cout<<"placing at phi "<<phi<<std::endl;
 
@@ -329,8 +396,9 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	  }
 
       //Transform3D tr(RotationZYX(0,phi,M_PI*0.5),Translation3D(m_pos_x,m_pos_y,m_pos_z));
-	  double zrot=-1.*aside*M_PI*0.5;
-
+	  //double zrot=-1.*aside*M_PI*0.5;
+	  double zrot=aside*M_PI*0.5;
+	  //double zrot=0.;
 	  Transform3D tr(RotationZYX(zrot,phi,M_PI*0.5),Translation3D(-m_pos_x,-m_pos_y,m_pos_z));
 	  PlacedVolume pv = envelope.placeVolume(towerVol,tr);
 	  pv.addPhysVolID("system",det_id);
@@ -345,13 +413,13 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 	  sd.setPlacement(pv);
 	  sdet.add(sd);
-      //}
+      }
 	}
       
 
     //          }
 
-      }
+    //      }
     } // end tower loop
 
   } // end side loop

@@ -31,13 +31,13 @@
 
 <!-- note in core and hole rmin is not used -->
 
- <staves vis="EcalStaveVis"/>
+ <staves vis="CrystalEcalTowerVis"/>
 <layer repeat="1" vis="CrystalEcalLayerVis">
-      <slice material = "E_PbWO4" thickness = "(EcalBarrel_rmax-EcalBarrel_rmin)*(5./19)" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
+      <slice material = "E_PbWO4" thickness = "(EcalBarrel_rmax-EcalBarrel_rmin)*(5./19)" sensitive="yes" limits="cal_limits" vis="Invisible"/>
 </layer>
-    <layer repeat="1" vis="CrystalEcalLayerVis">
-      <slice material = "E_PbWO4" thickness = "(EcalBarrel_rmax-EcalBarrel_rmin)*(14./19.)" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
-    </layer>
+<layer repeat="1" vis="CrystalEcalLayerVis"> 
+<slice material = "E_PbWO4" thickness = "(EcalBarrel_rmax-EcalBarrel_rmin)*(14./19.)" sensitive="yes" limits="cal_limits" vis="Invisible"/> 
+</layer> 
     </detector>
   </detectors>
 
