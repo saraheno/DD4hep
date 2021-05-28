@@ -32,7 +32,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
   xml_det_t     x_det     = e;
 
 
-  static double tol = 0.00001;
+  static double tol = 0.001;
   Layering      layering (e);
 
   // material to underly it all
@@ -129,7 +129,8 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
 
 
     // for(int itower=0;itower<nzdiv;itower++) {
-    for(int itower=1;itower<2;itower++) {
+    for(int itower=0;itower<nzdiv;itower++) {
+      if((itower==1)||(itower==nzdiv-1)) {
 
 	std::cout<<"ITOWER is "<<itower<<std::endl;
 
@@ -139,6 +140,7 @@ static Ref_t create_detector(Detector& description, xml_h e, SensitiveDetector s
     // angle for tower at this z division with respect to x-y plane
 
 	double aatheta = atan((itower*(delzt-delzb))/thick);
+	double tanaatheta = (itower*(delzt-delzb))/thick;
 
 
     //if I create a mother that is a brass trapezoid, and make the fiber a daughter, I do not need to make a hole in the brass but if I make a mother that is air and place the brass trapezoid and the fiber separately as daughters to the air mother, then I do need to make a hole in the brass
@@ -169,11 +171,12 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
 
 	double aapsi = itower==0 ? atan(thick/(delzt-delzb)) : atan(thick/(delzt+thick*tan(aatheta)-delzb));
+	double tanaapsi =thick/(delzt+thick*tanaatheta-delzb); 
 
 	std::cout<<"   psi angle psi c  at far edge "<<aapsi<<" "<<(M_PI/2.)-aapsi<<std::endl;
 
     // tower envelope
-	dd4hep::Trap towertrap((thick)/2.-tol,aatheta,0.,inphil/2.-tol,delzb/2.-tol,delzb/2.-tol,0.,outphil/2.-tol,delzt/2.-tol,delzt/2.-tol,0.);
+	dd4hep::Trap towertrap((thick)/2.,aatheta,0.,inphil/2.-0.5*tol,delzb/2.-0.5*tol,delzb/2.-0.5*tol,0.,outphil/2.-0.5*tol,delzt/2.-0.5*tol,delzt/2.-0.5*tol,0.);
 	dd4hep::Volume towerVol( "tower", towertrap, air);
   std::cout<<"   tower visstr is "<<x_towers.visStr()<<std::endl;
 	towerVol.setVisAttributes(description, x_towers.visStr());
@@ -207,21 +210,33 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	    double outphill = 2*(r_topl+inner_r)*tan(delphi/2.);
 
 
-	    double bottoml = itower==0 ? (inner_r+r_bottoml)/tan(aapsi) : delzb+(r_bottoml/tan(aapsi))-r_bottoml*tan(aatheta);
-	    double topl = itower==0 ? (inner_r+r_topl)/tan(aapsi) :  delzb+(r_topl/tan(aapsi))-r_topl*tan(aatheta);
-	    double midl = itower==0 ? (inner_r+r_midl)/tan(aapsi) : delzb+(r_midl/tan(aapsi))-r_midl*tan(aatheta);
+	    //double bottoml = itower==0 ? (inner_r+r_bottoml)/tan(aapsi) : delzb+(r_bottoml/tan(aapsi))-r_bottoml*tan(aatheta);
+
+	    double bottoml = itower==0 ? (inner_r+r_bottoml)/tanaapsi : delzb-r_bottoml*tanaatheta+r_bottoml/tanaapsi;
+
+	    double topl = itower==0 ? (inner_r+r_topl)/tanaapsi :  delzb+(r_topl/tanaapsi)-r_topl*tanaatheta;
+	    double midl = itower==0 ? (inner_r+r_midl)/tanaapsi : delzb+(r_midl/tanaapsi)-r_midl*tanaatheta;
+
+
+	    // I hate root.  "origin" is not at 0,0,0 but place at 0,0,0, not "origin"
+	    double xmidt=delzb/2.+thick*tanaatheta/2.;
+	    double xmidl=bottoml/2.+l_thickness*tanaatheta/2.;
+	    double deltal=xmidt-xmidl;
+	    double offsetl=r_bottoml*tanaatheta;
+	    double offset2=((bottoml+l_thickness/tanaapsi)/2.-xmidl)/2.;
+	    double dxmidl=-1.*(deltal-offsetl+offset2);
 
 
 
-	    double xmidt=0.5*(delzb+thick/2./tan(aapsi));
-	    //double xmidl=0.5*(delzb+l_thickness/tan(aapsi));
-	    double xmidl=0.5*(bottoml+l_thickness/2./tan(aapsi));
-	    double xoffl=r_bottoml/2.*tan(aatheta);
-	    double tweek=0;
-	    double dxmidl= -1.*(xmidt-xmidl-xoffl)+tweek;
+
+	    //dxmidl=0.;
+	    
+	    //if(r_midl>thick/2.) dxmidl=-1.*dxmidl;
 
 
-	    std::cout<<"  dXMIDL is "<<dxmidl<<" "<<xmidt<<" "<<xmidl<<" "<<xoffl<<std::endl;
+
+	    std::cout<<"  dXMIDL is "<<dxmidl<<" "<<bottoml<<" "<<delzb<<" "<<xmidt<<" "<<xmidl<<" "<<deltal<<" "<<offsetl<<" "<<offset2<<std::endl;
+	    //dxmidl=0.;
 
 	    double ymidl=0.;
 
@@ -245,7 +260,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	
 
 
-	    dd4hep::Trap l_box((l_thickness)/2.-2.*tol,aatheta,0.,inphill/2.-2.*tol,bottoml/2.-2.*tol,bottoml/2.-2.*tol,0.,outphill/2.-2.*tol,topl/2.-2.*tol,topl/2.-2.*tol,0.);
+	    dd4hep::Trap l_box((l_thickness)/2.-tol,aatheta,0.,inphill/2.-tol,bottoml/2.-tol,bottoml/2.-tol,0.,outphill/2.-tol,topl/2.-tol,topl/2.-tol,0.);
 	    dd4hep::Volume     l_vol(l_name,l_box,air);
 	    DetElement layer(tower_det, l_name, det_id);
 
@@ -261,6 +276,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	      // this is relative to tower bottom, not layer bottom
 	      double r_tops=r_bottoms + s_thickness;
 	      double r_mids=r_bottoms + s_thickness/2.;
+	      double r_mids2 = r_bottoms2+s_thickness/2.;
 	      
 
 
@@ -273,14 +289,13 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	      double mids = itower==0 ? (inner_r+r_mids)/tan(aapsi) : delzb+(r_mids/tan(aapsi))-r_mids*tan(aatheta);
 
 
-	      //double xmidt=0.5*(delzb+thick/tan(aapsi));
-	      //double xmidl=0.5*(delzb+l_thickness/tan(aapsi));
-	      double xmids=0.5*(bottoml+s_thickness/2./tan(aapsi));
-	      double xoffs=r_bottoms2/2.*tan(aatheta);
-	      std::cout<<" xmidl xmids xoffs "<<xmidl<<" "<<xmids<<" "<<xoffs<<std::endl;
-	      double dxmids= -1.*(xmidl-xmids-xoffs);
-	      //std::cout<<" dxmids xmidl xmids xoffs "<<dxmids<<" "<<xmidl<<" "<<xmids<<" "<<xoffs<<std::endl;
 
+
+
+	      double xmids=bottoms/2.+s_thickness*tanaatheta/2.;
+	      double offsets=r_bottoms2*tanaatheta;
+	      double offsets2=((bottoms+l_thickness/tanaapsi)/2.-xmids)/2.;
+	      double dxmids=-1.*(xmidl-xmids-offsets+offsets2)/2.;
 
 
 
@@ -305,7 +320,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 	
 
 	      Position   s_pos(dxmids,ymids,zmids);      // Position of the layer.
-	      dd4hep::Trap s_box((s_thickness)/2.-3.*tol,aatheta,0.,inphils/2.-3.*tol,bottoms/2.-3.*tol,bottoms/2.-3.*tol,0.,outphils/2.-3.*tol,tops/2.-3.*tol,tops/2.-3.*tol,0.);
+	      dd4hep::Trap s_box((s_thickness)/2.-2.*tol,aatheta,0.,inphils/2.-2.*tol,bottoms/2.-2.*tol,bottoms/2.-2.*tol,0.,outphils/2.-2.*tol,tops/2.-2.*tol,tops/2.-2.*tol,0.);
 
 
 	      dd4hep::Volume     s_vol(s_name,s_box,description.material(x_slice.materialStr()));
@@ -402,7 +417,7 @@ TH1 the angle w.r.t. the y axis from the centre of low y edge to the centre of t
 
     //          }
 
-    //      }
+         }
     } // end tower loop
 
   } // end side loop
